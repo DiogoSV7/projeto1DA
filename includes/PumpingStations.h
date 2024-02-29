@@ -5,6 +5,7 @@
 
 class PumpingStations{
     public:
+        PumpingStations()=default;
         PumpingStations(int id, std::string pumping_station_code);
         int getId() const;
         const std::string getPumpingStationCode() const;
@@ -12,6 +13,8 @@ class PumpingStations{
         int id_;
         std::string pumping_station_code_;
 };
+
+
 
 
 

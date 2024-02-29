@@ -5,17 +5,18 @@
 
 class Pipes{
     public:
-        Pipes(std::string city_source_name, std::string city_sink_name, int capacity, bool direction);
+        Pipes()=default;
+        Pipes(std::string serv_point_a, std::string serv_point_b, int capacity, bool direction);
         const std::string getCitySourceName() const;
         const std::string getCitySinkName() const;
-        int getCapacity() const;
-        bool getDirection() const; //true-> unidirectional false-> bidirectional
-
+        const int getCapacity() const;
+        const bool getDirection() const; //true-> unidirectional false-> bidirectional
     private:
-        std::string city_source_name_;
-        std::string city_sink_name_;
+        std::string serv_point_a_;
+        std::string serv_point_b_;
         int capacity_;
         bool direction_;
 };
+
 
 #endif //PROJETO1DA_PIPES_H
