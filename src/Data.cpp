@@ -34,7 +34,8 @@ void Data::readWaterReservoir() {
         int code = stoi(code_string);
         int max_delivery = stoi(max_delivery_string);
         WaterReservoir water_res(water_reservoir_name, municipality, id, code, max_delivery);
-        water_reservoirs_set_.insert(water_res);
+        Vertex new_vertex(water_res);
+        network_.addVertex(&new_vertex);
     }
 }
 
@@ -54,7 +55,8 @@ void Data::readPumpingStations() {
         getline(pumpingStationsFile, code, ',');
         int id = stoi(id_string);
         PumpingStations pump_sta(id,code);
-        pumping_stations_set_.insert(pump_sta);
+        Vertex new_vertex(pump_sta);
+        network_.addVertex(&new_vertex);
     }
 }
 
@@ -79,7 +81,8 @@ void Data::readDeliverySites() {
         int demand = stoi(demand_string);
         int population = stoi(population_string);
         DeliverySites del_site(city, id, code, demand, population);
-        delivery_sites_set_.insert(del_site);
+        Vertex new_vertex(del_site);
+        network_.addVertex(&new_vertex);
     }
 }
 
@@ -87,20 +90,29 @@ void Data::readPipes() {
     static const string PIPES_FILEPATH = "../dataset/Pipes_Madeira.csv";
 
     ifstream pipesFile(PIPES_FILEPATH);
-    if(pipesFile.fail()){
+    if (pipesFile.fail()) {
         ostringstream error_message;
         error_message << "Could not open file \"" << PIPES_FILEPATH << '"';
         throw ios_base::failure(error_message.str());
     }
     string serv_site_a, serv_site_b, capacity_string, direction_string;
     pipesFile.ignore(numeric_limits<streamsize>::max(), '\n');
-    while(getline(pipesFile, serv_site_a, ',')) {
+    while (getline(pipesFile, serv_site_a, ',')) {
         getline(pipesFile, serv_site_b, ',');
         getline(pipesFile, capacity_string, ',');
         getline(pipesFile, direction_string, ',');
         int capacity = stoi(capacity_string);
         int direction = stoi(direction_string);
         Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
-        pipes_set_.insert(pipe);
+        for (auto& entry : network_.getVertices()){
+            if(network_.findVertex(serv_site_a)!= nullptr && network_.findVertex(serv_site_b)){
+                Vertex* service_site_a = network_.findVertex(serv_site_a);
+                Vertex* service_site_b = network_.findVertex(serv_site_b);
+                network_.addEdge(service_site_a, service_site_b, capacity);
+            }
+        }
     }
+}
+Graph Data::getNetwork(){
+    return network_;
 }

@@ -18,7 +18,7 @@ const string WaterReservoir::getMunicipality() const {
     return municipality_;
 }
 
-const int WaterReservoir::getCode() const {
+const string WaterReservoir::getCode() const {
     return code_;
 }
 
@@ -30,14 +30,3 @@ const int WaterReservoir::getMaxDelivery() const {
     return max_delivery_;
 }
 
-bool WaterReservoir::operator==(const WaterReservoir &other) const {
-    return this->getId()==other.getId();
-}
-
-int WaterReservoirHash::operator()(const WaterReservoir& wr) const {
-    return std::hash<int>()(wr.getId());
-}
-
-bool WaterReservoirHash::operator()(const WaterReservoir& wr1, const WaterReservoir& wr2) const {
-    return wr1.getId() == wr2.getId();
-}

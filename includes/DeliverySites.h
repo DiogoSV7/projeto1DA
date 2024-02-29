@@ -6,6 +6,7 @@
 
 class DeliverySites{
     public:
+        DeliverySites()=default;
         DeliverySites(std::string city_name, int id, std::string code, int demand, int population);
         const std::string getCityName() const;
         const std::string getCode() const;
@@ -19,12 +20,6 @@ class DeliverySites{
         int id_;
         int demand_;
         int population_;
-};
-
-struct DeliverySitesHash{
-    int operator()(const DeliverySites& ds) const;
-
-    bool operator()(const DeliverySites& ds1, const DeliverySites& ds2) const;
 };
 
 #endif //PROJETO1DA_FILECITIES_H

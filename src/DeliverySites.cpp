@@ -29,14 +29,3 @@ const int DeliverySites::getPopulation() const {
     return population_;
 }
 
-bool DeliverySites::operator==(const DeliverySites &other) const {
-    return this->id_ == other.getId();
-}
-
-int DeliverySitesHash::operator()(const DeliverySites &ds) const {
-    return std::hash<int>()(ds.getId());
-}
-
-bool DeliverySitesHash::operator()(const DeliverySites &ds1, const DeliverySites &ds2) const {
-    return ds1.getId() == ds2.getId();
-}
