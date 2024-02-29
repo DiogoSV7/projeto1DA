@@ -15,4 +15,5 @@ add_executable(projeto1DA main.cpp
         includes/Data.h
         src/Data.cpp
         src/DeliverySites.cpp
+        src/WaterReservoir.cpp
 )

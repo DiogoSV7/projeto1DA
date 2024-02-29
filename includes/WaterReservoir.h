@@ -8,9 +8,11 @@ class WaterReservoir{
         WaterReservoir(std::string water_reservoir_name, std::string municipality, int id, int code, int max_delivery);
         const std::string getWaterReservoirName() const;
         const std::string getMunicipality() const;
-        int getId() const;
-        int getCode() const;
-        int getMaxDelivery() const;
+        const int getId() const;
+        const int getCode() const;
+        const int getMaxDelivery() const;
+        bool operator==(const WaterReservoir& other) const;
+
     private:
         std::string water_reservoir_name_;
         std::string municipality_;
@@ -19,4 +21,9 @@ class WaterReservoir{
         int max_delivery_;
 };
 
+struct WaterReservoirHash{
+    int operator()(const WaterReservoir& wr) const;
+
+    bool operator()(const WaterReservoir& wr1, const WaterReservoir& wr2) const;
+};
 #endif //DA_PROJ_WATERRESERVOIR_H

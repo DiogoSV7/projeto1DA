@@ -1,0 +1,7 @@
+# ninja log v5
+3	1735	1709226518197279120	CMakeFiles/projeto1DA.dir/src/PumpingStations.cpp.o	c84aa43232c97eb2
+3	1741	1709226518197260709	CMakeFiles/projeto1DA.dir/src/WaterReservoir.cpp.o	58b9eb6ed6545436
+4	1742	1709226518197190731	CMakeFiles/projeto1DA.dir/src/DeliverySites.cpp.o	8708f28a9e9cbbcb
+2	1743	1709226518213776951	CMakeFiles/projeto1DA.dir/src/Pipes.cpp.o	c046a9573d120e52
+0	1890	1709226518361269573	CMakeFiles/projeto1DA.dir/main.cpp.o	2d347d13113cea95
+4	2267	1709226518738927624	CMakeFiles/projeto1DA.dir/src/Data.cpp.o	70884c4388e5b079

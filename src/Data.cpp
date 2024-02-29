@@ -1,5 +1,106 @@
-//
-// Created by tiago on 29-02-2024.
-//
-
 #include "../includes/Data.h"
+#include <fstream>
+#include <sstream>
+#include <limits>
+using namespace std;
+
+
+Data::Data() {
+    readPipes();
+    readPumpingStations();
+    readDeliverySites();
+    readWaterReservoir();
+}
+
+void Data::readWaterReservoir() {
+    static const string WATER_RESERVOIRS_FILEPATH = "../dataset/Reservoirs_Madeira.csv";
+
+    ifstream waterReservoirsFile(WATER_RESERVOIRS_FILEPATH);
+    if(waterReservoirsFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << WATER_RESERVOIRS_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string water_reservoir_name, municipality, id_string, code_string , max_delivery_string;
+    waterReservoirsFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    while(getline(waterReservoirsFile, water_reservoir_name, ',')) {
+        getline(waterReservoirsFile, municipality, ',');
+        getline(waterReservoirsFile, id_string, ',');
+        getline(waterReservoirsFile, code_string, ',');
+        getline(waterReservoirsFile, max_delivery_string, ',');
+
+        int id = stoi(id_string);
+        int code = stoi(code_string);
+        int max_delivery = stoi(max_delivery_string);
+        WaterReservoir water_res(water_reservoir_name, municipality, id, code, max_delivery);
+        water_reservoirs_set_.insert(water_res);
+    }
+}
+
+void Data::readPumpingStations() {
+    static const string PUMPING_STATIONS_FILEPATH = "../dataset/Stations_Madeira.csv";
+
+    ifstream pumpingStationsFile(PUMPING_STATIONS_FILEPATH);
+    if(pumpingStationsFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << PUMPING_STATIONS_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string id_string, code;
+    pumpingStationsFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    while(getline(pumpingStationsFile, id_string, ',')) {
+        getline(pumpingStationsFile, code, ',');
+        int id = stoi(id_string);
+        PumpingStations pump_sta(id,code);
+        pumping_stations_set_.insert(pump_sta);
+    }
+}
+
+void Data::readDeliverySites() {
+    static const string DELIVERY_SITES_FILEPATH = "../dataset/Cities_Madeira.csv";
+
+    ifstream deliverySitesFile(DELIVERY_SITES_FILEPATH);
+    if(deliverySitesFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << DELIVERY_SITES_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string city, id_string, code, demand_string, population_string;
+    deliverySitesFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    while(getline(deliverySitesFile, city, ',')) {
+        getline(deliverySitesFile, id_string, ',');
+        getline(deliverySitesFile, code, ',');
+        getline(deliverySitesFile, demand_string, ',');
+        getline(deliverySitesFile, population_string, ',');
+        int id = stoi(id_string);
+        int demand = stoi(demand_string);
+        int population = stoi(population_string);
+        DeliverySites del_site(city, id, code, demand, population);
+        delivery_sites_set_.insert(del_site);
+    }
+}
+
+void Data::readPipes() {
+    static const string PIPES_FILEPATH = "../dataset/Pipes_Madeira.csv";
+
+    ifstream pipesFile(PIPES_FILEPATH);
+    if(pipesFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << PIPES_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+    string serv_site_a, serv_site_b, capacity_string, direction_string;
+    pipesFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    while(getline(pipesFile, serv_site_a, ',')) {
+        getline(pipesFile, serv_site_b, ',');
+        getline(pipesFile, capacity_string, ',');
+        getline(pipesFile, direction_string, ',');
+        int capacity = stoi(capacity_string);
+        int direction = stoi(direction_string);
+        Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
+        pipes_set_.insert(pipe);
+    }
+}
