@@ -4,4 +4,15 @@ project(projeto1DA)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(projeto1DA main.cpp
-        includes/Graph.h)
+        includes/Graph.h
+        includes/PumpingStations.h
+        includes/Pipes.h
+        includes/WaterReservoir.h
+        includes/DeliverySites.h
+        src/Pipes.cpp
+        src/PumpingStations.cpp
+        src/WaterReservoir.cpp
+        includes/Data.h
+        src/Data.cpp
+        src/DeliverySites.cpp
+)
