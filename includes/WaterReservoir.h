@@ -6,7 +6,7 @@
 class WaterReservoir{
     public:
         WaterReservoir()=default;
-        WaterReservoir(std::string water_reservoir_name, std::string municipality, int id, int code, int max_delivery);
+        WaterReservoir(std::string water_reservoir_name, std::string municipality, int id, std::string code, int max_delivery);
         const std::string getWaterReservoirName() const;
         const std::string getMunicipality() const;
         const int getId() const;

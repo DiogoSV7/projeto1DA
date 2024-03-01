@@ -2,7 +2,7 @@
 #include "../includes/WaterReservoir.h"
 using namespace std;
 
-WaterReservoir::WaterReservoir(string water_reservoir_name, string municipality, int id, int code, int max_delivery){
+WaterReservoir::WaterReservoir(string water_reservoir_name, string municipality, int id, string code, int max_delivery){
     this->water_reservoir_name_=water_reservoir_name;
     this->municipality_=municipality;
     this->code_=code;

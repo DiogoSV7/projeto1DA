@@ -22,16 +22,16 @@ void Data::readWaterReservoir() {
         throw ios_base::failure(error_message.str());
     }
 
-    string water_reservoir_name, municipality, id_string, code_string , max_delivery_string;
+    string water_reservoir_name, municipality, id_string, code , max_delivery_string, max_numeric_limits;
     waterReservoirsFile.ignore(numeric_limits<streamsize>::max(), '\n');
     while(getline(waterReservoirsFile, water_reservoir_name, ',')) {
         getline(waterReservoirsFile, municipality, ',');
         getline(waterReservoirsFile, id_string, ',');
-        getline(waterReservoirsFile, code_string, ',');
+        getline(waterReservoirsFile, code, ',');
         getline(waterReservoirsFile, max_delivery_string, ',');
+        getline(waterReservoirsFile, max_numeric_limits);
 
         int id = stoi(id_string);
-        int code = stoi(code_string);
         int max_delivery = stoi(max_delivery_string);
         WaterReservoir water_res(water_reservoir_name, municipality, id, code, max_delivery);
         Vertex new_vertex(water_res);
@@ -49,10 +49,11 @@ void Data::readPumpingStations() {
         throw ios_base::failure(error_message.str());
     }
 
-    string id_string, code;
+    string id_string, code, max_delivery_string;
     pumpingStationsFile.ignore(numeric_limits<streamsize>::max(), '\n');
     while(getline(pumpingStationsFile, id_string, ',')) {
         getline(pumpingStationsFile, code, ',');
+        getline(pumpingStationsFile, max_delivery_string);
         int id = stoi(id_string);
         PumpingStations pump_sta(id,code);
         Vertex new_vertex(pump_sta);
@@ -78,9 +79,8 @@ void Data::readDeliverySites() {
         getline(deliverySitesFile, demand_string, ',');
         getline(deliverySitesFile, population_string, ',');
         int id = stoi(id_string);
-        int demand = stoi(demand_string);
-        int population = stoi(population_string);
-        DeliverySites del_site(city, id, code, demand, population);
+        double demand = stod(demand_string);
+        DeliverySites del_site(city, id, code, demand, population_string);
         Vertex new_vertex(del_site);
         network_.addVertex(&new_vertex);
     }
