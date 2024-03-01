@@ -126,17 +126,17 @@
 		},
 		{
 			"backtrace" : 1,
+			"path" : "includes/WaterReservoir.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
 			"path" : "includes/PumpingStations.h",
 			"sourceGroupIndex" : 1
 		},
 		{
 			"backtrace" : 1,
 			"path" : "includes/Pipes.h",
-			"sourceGroupIndex" : 1
-		},
-		{
-			"backtrace" : 1,
-			"path" : "includes/WaterReservoir.h",
 			"sourceGroupIndex" : 1
 		},
 		{
