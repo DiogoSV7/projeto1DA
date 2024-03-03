@@ -5,7 +5,7 @@ using namespace std;
 
 Data::Data() {
     readPipes();
-    //readPumpingStations();
+    readPumpingStations();
     readDeliverySites();
     readWaterReservoir();
 }
@@ -34,7 +34,7 @@ void Data::readWaterReservoir() {
         int id = stoi(id_string);
         int max_delivery = stoi(max_delivery_string);
         WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
-        network_.addWaterReservoir(code_string,water_res);
+        network_.addWaterReservoir(code_string, water_res);
     }
 }
 
@@ -52,7 +52,7 @@ void Data::readPumpingStations() {
 
     string id_string, code;
     while(getline(pumpingStationsFile, id_string, ',')) {
-        getline(pumpingStationsFile, code, ',');
+        getline(pumpingStationsFile, code);
         int id = stoi(id_string);
         PumpingStations pump_sta(id,code);
         network_.addPumpingStation(code, pump_sta);
