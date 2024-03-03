@@ -30,6 +30,18 @@ public:
     void addWaterReservoir(const std::string& code, const WaterReservoir& wr){
         reservoirs_.emplace(code,wr);
     }
+    std::unordered_map<std::string, WaterReservoir> getReservoirs() const {
+        return reservoirs_;
+    }
+    std::unordered_map<std::string, PumpingStations> getPumpingStations() const {
+        return pumpingStations_;
+    }
+    std::unordered_map<std::string, DeliverySites> getDeliverySites() const {
+        return deliverySites_;
+    }
+    std::vector<Pipes> getPipes() const {
+        return pipes_;
+    }
 private:
     std::unordered_map<std::string, WaterReservoir> reservoirs_;
     std::unordered_map<std::string, PumpingStations> pumpingStations_;

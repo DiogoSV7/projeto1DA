@@ -7,7 +7,7 @@ Window::Window() {
 }
 
 void Window::launch(){
-    for(auto vertex: data_.getNetwork().reservoirs_){
+    for(auto vertex: data_.getNetwork().getReservoirs()){
         cout << vertex.second.getId() << endl;
         cout << vertex.second.getCode() << endl;
     }

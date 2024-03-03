@@ -2,10 +2,7 @@
 #define PROJETO1DA_DATA_H
 
 #include <unordered_set>
-#include "WaterReservoir.h"
-#include "PumpingStations.h"
-#include "Pipes.h"
-#include "DeliverySites.h"
+#include <string>
 #include "Graph.h"
 
 class Data {
