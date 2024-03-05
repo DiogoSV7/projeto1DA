@@ -5,7 +5,7 @@ using namespace std;
 
 Data::Data() {
     readPipes();
-    readPumpingStations();
+    //readPumpingStations();
     readDeliverySites();
     readWaterReservoir();
 }
@@ -51,10 +51,15 @@ void Data::readPumpingStations() {
     getline(pumpingStationsFile,header);
 
     string id_string, code;
-    while(getline(pumpingStationsFile, id_string, ',')) {
-        getline(pumpingStationsFile, code);
+    while (getline(pumpingStationsFile, id_string, ',')) {
+        getline(pumpingStationsFile, code, ',');
+        // Remove any extra commas from the end of the code string
+        while (!code.empty() && code.back() == ',') {
+            code.pop_back();
+        }
+
         int id = stoi(id_string);
-        PumpingStations pump_sta(id,code);
+        PumpingStations pump_sta(id, code);
         network_.addPumpingStation(code, pump_sta);
     }
 }
@@ -106,11 +111,7 @@ void Data::readPipes() {
         int capacity = stoi(capacity_string);
         int direction = stoi(direction_string);
         Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
-        //Node* service_site_a = network_.findNode(serv_site_a);
-        //Node* service_site_b = network_.findNode(serv_site_b);
-        //if (service_site_a != nullptr && service_site_b != nullptr) {
-        //    network_.addEdge(service_site_a, service_site_b, static_cast<double>(capacity));
-        //}
+        network_.addEdge(pipe);
     }
 }
 

@@ -30,6 +30,11 @@ public:
     void addWaterReservoir(const std::string& code, const WaterReservoir& wr){
         reservoirs_.emplace(code,wr);
     }
+
+    void addEdge(const Pipes& pipe){
+        pipes_.push_back(pipe);
+    }
+
     std::unordered_map<std::string, WaterReservoir> getReservoirs() const {
         return reservoirs_;
     }

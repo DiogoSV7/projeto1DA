@@ -7,12 +7,10 @@ Window::Window() {
 }
 
 void Window::launch(){
-    for(auto vertex: data_.getNetwork().getReservoirs()){
-        cout << vertex.second.getId() << endl;
-        cout << vertex.second.getCode() << endl;
-    }
-    for(auto vertex: data_.getNetwork().getPumpingStations()){
-        cout << vertex.second.getId() << endl;
-        cout << vertex.second.getPumpingStationCode() << endl;
+    for(auto edge : data_.getNetwork().getPipes()){
+        cout << edge.getCitySourceName() << endl;
+        cout << edge.getCitySinkName() << endl;
+        cout << edge.getDirection() << endl;
+        cout << edge.getCapacity() << endl;
     }
 }
