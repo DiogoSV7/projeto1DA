@@ -85,6 +85,12 @@ build CMakeFiles/projeto1DA.dir/src/DeliverySites.cpp.o: CXX_COMPILER__projeto1D
   OBJECT_DIR = CMakeFiles/projeto1DA.dir
   OBJECT_FILE_DIR = CMakeFiles/projeto1DA.dir/src
 
+build CMakeFiles/projeto1DA.dir/src/Window.cpp.o: CXX_COMPILER__projeto1DA_unscanned_Debug /Users/diogovieira/CLionProjects/projeto1DA/src/Window.cpp || cmake_object_order_depends_target_projeto1DA
+  DEP_FILE = CMakeFiles/projeto1DA.dir/src/Window.cpp.o.d
+  FLAGS = -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics
+  OBJECT_DIR = CMakeFiles/projeto1DA.dir
+  OBJECT_FILE_DIR = CMakeFiles/projeto1DA.dir/src
+
 
 # =============================================================================
 # Link build statements for EXECUTABLE target projeto1DA
@@ -93,7 +99,7 @@ build CMakeFiles/projeto1DA.dir/src/DeliverySites.cpp.o: CXX_COMPILER__projeto1D
 #############################################
 # Link the executable projeto1DA
 
-build projeto1DA: CXX_EXECUTABLE_LINKER__projeto1DA_Debug CMakeFiles/projeto1DA.dir/main.cpp.o CMakeFiles/projeto1DA.dir/src/Pipes.cpp.o CMakeFiles/projeto1DA.dir/src/PumpingStations.cpp.o CMakeFiles/projeto1DA.dir/src/WaterReservoir.cpp.o CMakeFiles/projeto1DA.dir/src/Data.cpp.o CMakeFiles/projeto1DA.dir/src/DeliverySites.cpp.o
+build projeto1DA: CXX_EXECUTABLE_LINKER__projeto1DA_Debug CMakeFiles/projeto1DA.dir/main.cpp.o CMakeFiles/projeto1DA.dir/src/Pipes.cpp.o CMakeFiles/projeto1DA.dir/src/PumpingStations.cpp.o CMakeFiles/projeto1DA.dir/src/WaterReservoir.cpp.o CMakeFiles/projeto1DA.dir/src/Data.cpp.o CMakeFiles/projeto1DA.dir/src/DeliverySites.cpp.o CMakeFiles/projeto1DA.dir/src/Window.cpp.o
   FLAGS = -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk
   OBJECT_DIR = CMakeFiles/projeto1DA.dir
   POST_BUILD = :

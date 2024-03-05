@@ -1,13 +1,11 @@
 #include "../includes/Data.h"
 #include <fstream>
 #include <sstream>
-#include <limits>
 using namespace std;
-
 
 Data::Data() {
     readPipes();
-    readPumpingStations();
+    //readPumpingStations();
     readDeliverySites();
     readWaterReservoir();
 }
@@ -22,20 +20,21 @@ void Data::readWaterReservoir() {
         throw ios_base::failure(error_message.str());
     }
 
-    string water_reservoir_name, municipality, id_string, code_string , max_delivery_string;
-    waterReservoirsFile.ignore(numeric_limits<streamsize>::max(), '\n');
+    string header;
+    getline(waterReservoirsFile,header);
+
+    string water_reservoir_name, municipality, id_string, code_string , max_delivery_string, coma;
     while(getline(waterReservoirsFile, water_reservoir_name, ',')) {
         getline(waterReservoirsFile, municipality, ',');
         getline(waterReservoirsFile, id_string, ',');
         getline(waterReservoirsFile, code_string, ',');
         getline(waterReservoirsFile, max_delivery_string, ',');
+        getline(waterReservoirsFile,coma);
 
         int id = stoi(id_string);
-        int code = stoi(code_string);
         int max_delivery = stoi(max_delivery_string);
-        WaterReservoir water_res(water_reservoir_name, municipality, id, code, max_delivery);
-        Vertex new_vertex(water_res);
-        network_.addVertex(&new_vertex);
+        WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
+        network_.addWaterReservoir(code_string, water_res);
     }
 }
 
@@ -48,15 +47,20 @@ void Data::readPumpingStations() {
         error_message << "Could not open file \"" << PUMPING_STATIONS_FILEPATH << '"';
         throw ios_base::failure(error_message.str());
     }
+    string header;
+    getline(pumpingStationsFile,header);
 
     string id_string, code;
-    pumpingStationsFile.ignore(numeric_limits<streamsize>::max(), '\n');
-    while(getline(pumpingStationsFile, id_string, ',')) {
+    while (getline(pumpingStationsFile, id_string, ',')) {
         getline(pumpingStationsFile, code, ',');
+        // Remove any extra commas from the end of the code string
+        while (!code.empty() && code.back() == ',') {
+            code.pop_back();
+        }
+
         int id = stoi(id_string);
-        PumpingStations pump_sta(id,code);
-        Vertex new_vertex(pump_sta);
-        network_.addVertex(&new_vertex);
+        PumpingStations pump_sta(id, code);
+        network_.addPumpingStation(code, pump_sta);
     }
 }
 
@@ -70,19 +74,19 @@ void Data::readDeliverySites() {
         throw ios_base::failure(error_message.str());
     }
 
+    string header;
+    getline(deliverySitesFile,header);
+
     string city, id_string, code, demand_string, population_string;
-    deliverySitesFile.ignore(numeric_limits<streamsize>::max(), '\n');
     while(getline(deliverySitesFile, city, ',')) {
         getline(deliverySitesFile, id_string, ',');
         getline(deliverySitesFile, code, ',');
         getline(deliverySitesFile, demand_string, ',');
-        getline(deliverySitesFile, population_string, ',');
+        getline(deliverySitesFile, population_string);
         int id = stoi(id_string);
-        int demand = stoi(demand_string);
-        int population = stoi(population_string);
-        DeliverySites del_site(city, id, code, demand, population);
-        Vertex new_vertex(del_site);
-        network_.addVertex(&new_vertex);
+        double demand = stod(demand_string);
+        DeliverySites del_site(city, id, code, demand, population_string);
+        network_.addDeliverySite(code, del_site);
     }
 }
 
@@ -95,24 +99,23 @@ void Data::readPipes() {
         error_message << "Could not open file \"" << PIPES_FILEPATH << '"';
         throw ios_base::failure(error_message.str());
     }
+
+    string header;
+    getline(pipesFile,header);
+
     string serv_site_a, serv_site_b, capacity_string, direction_string;
-    pipesFile.ignore(numeric_limits<streamsize>::max(), '\n');
     while (getline(pipesFile, serv_site_a, ',')) {
         getline(pipesFile, serv_site_b, ',');
         getline(pipesFile, capacity_string, ',');
-        getline(pipesFile, direction_string, ',');
+        getline(pipesFile, direction_string);
         int capacity = stoi(capacity_string);
         int direction = stoi(direction_string);
         Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
-        for (auto& entry : network_.getVertices()){
-            if(network_.findVertex(serv_site_a)!= nullptr && network_.findVertex(serv_site_b)){
-                Vertex* service_site_a = network_.findVertex(serv_site_a);
-                Vertex* service_site_b = network_.findVertex(serv_site_b);
-                network_.addEdge(service_site_a, service_site_b, capacity);
-            }
-        }
+        network_.addEdge(pipe);
     }
 }
+
+
 Graph Data::getNetwork(){
     return network_;
 }

@@ -1,7 +1,7 @@
 #include "../includes/Pipes.h"
 using namespace std;
 
-Pipes::Pipes(std::string serv_site_a, std::string serv_site_b, int capacity, bool direction) {
+Pipes::Pipes(std::string serv_site_a, std::string serv_site_b, int capacity, int direction) {
     this->serv_point_a_ = serv_site_a;
     this->serv_point_b_ = serv_site_b;
     this->capacity_ = capacity;
@@ -20,7 +20,7 @@ const int Pipes::getCapacity() const {
     return capacity_;
 }
 
-const bool Pipes::getDirection() const {
+const int Pipes::getDirection() const {
     return direction_;
 }
 

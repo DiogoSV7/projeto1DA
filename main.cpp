@@ -1,6 +1,8 @@
 #include <iostream>
+#include "includes/Window.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    Window window;
+    window.launch();
     return 0;
 }
