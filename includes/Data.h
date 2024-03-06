@@ -5,6 +5,7 @@
 #include <string>
 #include "Graph.h"
 
+template<class T>
 class Data {
     public:
         Data();
@@ -12,9 +13,10 @@ class Data {
         void readPipes();
         void readPumpingStations();
         void readWaterReservoir();
-        Graph getNetwork();
+        Graph<T> getNetwork();
+        int maxWaterCity(const std::string& city_code);
     private:
-        Graph network_;
+        Graph<T> network_;
 };
 
 
