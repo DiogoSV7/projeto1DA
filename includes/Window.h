@@ -4,12 +4,13 @@
 
 #include "Data.h"
 
+template<class T>
 class Window{
 public:
     Window();
     void launch();
 private:
-    Data data_;
+    Data<T> data_;
 
 };
 
