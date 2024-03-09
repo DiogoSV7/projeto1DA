@@ -18,4 +18,5 @@ add_executable(projeto1DA main.cpp
         src/WaterReservoir.cpp
         src/Window.cpp
         includes/MutablePriorityQueue.h
+        includes/Graph.cpp
 )

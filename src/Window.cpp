@@ -8,9 +8,7 @@ Window::Window() {
 
 void Window::launch(){
     for(auto vertex : data_.getNetwork().getVertexSet()) {
-        if(vertex->getType()==0){
-            WaterReservoir water_reservoir = data_.findWaterReservoir(vertex->getInfo());
-            cout << water_reservoir.getCode() << " " << water_reservoir.getMunicipality() << endl;
-        }
+
+            cout << vertex->getInfo() << " "<<vertex->getAdj().size() <<endl;
     }
 }

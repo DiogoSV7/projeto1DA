@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <string>
+#include <vector>
 #include "WaterReservoir.h"
 #include "DeliverySites.h"
 #include "PumpingStations.h"

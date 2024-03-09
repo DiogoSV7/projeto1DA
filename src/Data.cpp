@@ -8,10 +8,14 @@ using namespace std;
 
 
 Data::Data() {
-    readPipes();
-    readPumpingStations();
+
+    readPumpingStations();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+
     readDeliverySites();
-    readWaterReservoir();
+
+    readWaterReservoir();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+
+    readPipes();
 }
 
 void Data::readWaterReservoir() {

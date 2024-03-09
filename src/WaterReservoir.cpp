@@ -1,11 +1,12 @@
 #include <string>
+#include <utility>
 #include "../includes/WaterReservoir.h"
 using namespace std;
 
 WaterReservoir::WaterReservoir(string water_reservoir_name, string municipality, int id, string code, int max_delivery){
-    this->water_reservoir_name_=water_reservoir_name;
-    this->municipality_=municipality;
-    this->code_=code;
+    this->water_reservoir_name_=std::move(water_reservoir_name);
+    this->municipality_=std::move(municipality);
+    this->code_=std::move(code);
     this->id_=id;
     this->max_delivery_=max_delivery;
 }
