@@ -1,196 +1,142 @@
 #ifndef PROJETO1DA_GRAPH_H
 #define PROJETO1DA_GRAPH_H
 
-//#include <iostream>
-//#include <vector>
-//#include <unordered_map>
-//#include <string>
-//#include <algorithm>
-#include "PumpingStations.h"
-#include "DeliverySites.h"
-#include "Pipes.h"
-#include "WaterReservoir.h"
-//
-//// Original code by Gonçalo Leão
-//// Updated by DA 2023/2024 Team
-//
-//#ifndef DA_TP_CLASSES_GRAPH
-//#define DA_TP_CLASSES_GRAPH
-
 #include <iostream>
 #include <vector>
 #include <queue>
 #include <limits>
 #include <algorithm>
 #include "MutablePriorityQueue.h"
+#include "DeliverySites.h"
+#include "PumpingStations.h"
+#include "WaterReservoir.h"
 
-template <class T>
+
 class Edge;
 
-#define INF std::numeric_limits<double>::max()
-
-/************************* Vertex  **************************/
-
-template <class T>
 class Vertex {
 public:
-    Vertex(T in);
-    bool operator<(Vertex<T> & vertex) const; // // required by MutablePriorityQueue
+    Vertex(const std::string& in, const int type);
+    Edge* addEdge(Vertex* dest, double w);
+    bool removeEdge(const std::string& in);
+    void removeOutgoingEdges();
 
-    T getInfo() const;
-    std::vector<Edge<T> *> getAdj() const;
+    bool operator<(const Vertex& vertex) const;
+
+    std::string getInfo() const;
+    int getType() const;
+    std::vector<Edge*> getAdj() const;
     bool isVisited() const;
     bool isProcessing() const;
     unsigned int getIndegree() const;
     double getDist() const;
-    Edge<T> *getPath() const;
-    std::vector<Edge<T> *> getIncoming() const;
+    Edge* getPath() const;
+    std::vector<Edge*> getIncoming() const;
 
-    void setInfo(T info);
+    void setInfo(const std::string& info);
     void setVisited(bool visited);
-    void setProcesssing(bool processing);
+    void setProcessing(bool processing);
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
-    void setPath(Edge<T> *path);
-    Edge<T> * addEdge(Vertex<T> *dest, double w);
-    bool removeEdge(T in);
-    void removeOutgoingEdges();
+    void setPath(Edge* path);
 
     friend class MutablePriorityQueue<Vertex>;
+
 protected:
-    T info;                // info node
-    std::vector<Edge<T> *> adj;  // outgoing edges
+    std::string info;
+    std::vector<Edge*> adj;
+    int type_;
+    bool visited;
+    bool processing;
+    unsigned int indegree;
+    double dist;
+    Edge* path;
+    std::vector<Edge*> incoming;
 
-    // auxiliary fields
-    bool visited = false; // used by DFS, BFS, Prim ...
-    bool processing = false; // used by isDAG (in addition to the visited attribute)
-    unsigned int indegree; // used by topsort
-    double dist = 0;
-    Edge<T> *path = nullptr;
-
-    std::vector<Edge<T> *> incoming; // incoming edges
-
-    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
-
-    void deleteEdge(Edge<T> *edge);
+    int queueIndex;
+    void deleteEdge(Edge* edge);
 };
 
-/********************** Edge  ****************************/
-
-template <class T>
 class Edge {
 public:
-    Edge(Vertex<T> *orig, Vertex<T> *dest, double w);
+    Edge(Vertex* orig, Vertex* dest, double w);
 
-    Vertex<T> * getDest() const;
+    Vertex* getDest() const;
     double getWeight() const;
     bool isSelected() const;
-    Vertex<T> * getOrig() const;
-    Edge<T> *getReverse() const;
+    Vertex* getOrig() const;
+    Edge* getReverse() const;
     double getFlow() const;
 
     void setSelected(bool selected);
-    void setReverse(Edge<T> *reverse);
+    void setReverse(Edge* reverse);
     void setFlow(double flow);
+
 protected:
-    Vertex<T> * dest; // destination vertex
-    double weight; // edge weight, can also be used for capacity
-
-    // auxiliary fields
-    bool selected = false;
-
-    // used for bidirectional edges
-    Vertex<T> *orig;
-    Edge<T> *reverse = nullptr;
-
-    double flow; // for flow-related problems
+    Vertex* dest;
+    double weight;
+    bool selected;
+    Vertex* orig;
+    Edge* reverse;
+    double flow;
 };
 
-/********************** Graph  ****************************/
-
-template <class T>
 class Graph {
 public:
     ~Graph();
-    /*
-    * Auxiliary function to find a vertex with a given the content.
-    */
-    Vertex<T> *findVertex(const T &in) const;
-    /*
-     *  Adds a vertex with a given content or info (in) to a graph (this).
-     *  Returns true if successful, and false if a vertex with that content already exists.
-     */
-    bool addVertex(const T &in);
-    bool removeVertex(const T &in);
 
-    /*
-     * Adds an edge to a graph (this), given the contents of the source and
-     * destination vertices and the edge weight (w).
-     * Returns true if successful, and false if the source or destination vertex does not exist.
-     */
-    bool addEdge(const T &sourc, const T &dest, double w);
-    bool removeEdge(const T &source, const T &dest);
-    bool addBidirectionalEdge(const T &sourc, const T &dest, double w);
+    Vertex* findVertex(const std::string& in) const;
+    bool addVertex(const std::string& in, const int type);
+    bool removeVertex(const std::string& in);
+    bool addEdge(const std::string& source, const std::string& dest, double w);
+    bool removeEdge(const std::string& source, const std::string& dest);
+    bool addBidirectionalEdge(const std::string& source, const std::string& dest, double w);
 
     int getNumVertex() const;
-    std::vector<Vertex<T> *> getVertexSet() const;
+    std::vector<Vertex*> getVertexSet() const;
+    std::unordered_map<std::string, Vertex*> getVertexMap() const;
 
-    std:: vector<T> dfs() const;
-    std:: vector<T> dfs(const T & source) const;
-    void dfsVisit(Vertex<T> *v,  std::vector<T> & res) const;
-    std::vector<T> bfs(const T & source) const;
+    std::vector<std::string> dfs() const;
+    std::vector<std::string> dfs(const std::string& source) const;
+    void dfsVisit(Vertex* v, std::vector<std::string>& res) const;
+    std::vector<std::string> bfs(const std::string& source) const;
 
     bool isDAG() const;
-    bool dfsIsDAG(Vertex<T> *v) const;
-    std::vector<T> topsort() const;
+    bool dfsIsDAG(Vertex* v) const;
+    std::vector<std::string> topsort() const;
+
 protected:
-    std::vector<Vertex<T> *> vertexSet;    // vertex set
+    std::vector<Vertex*> vertexSet;
+    std::unordered_map<std::string, Vertex*> vertexMap;
 
-    double ** distMatrix = nullptr;   // dist matrix for Floyd-Warshall
-    int **pathMatrix = nullptr;   // path matrix for Floyd-Warshall
+    double** distMatrix;
+    int** pathMatrix;
 
-    /*
-     * Finds the index of the vertex with a given content.
-     */
-    int findVertexIdx(const T &in) const;
+    int findVertexIdx(const std::string& in) const;
+    void deleteMatrix(int** m, int n);
+    void deleteMatrix(double** m, int n);
 };
 
-void deleteMatrix(int **m, int n);
-void deleteMatrix(double **m, int n);
+Vertex::Vertex(const std::string& in, const int type) : type_(type), info(in), visited(false), processing(false), indegree(0), dist(0), path(nullptr), queueIndex(0) {}
 
 
-/************************* Vertex  **************************/
-
-template <class T>
-Vertex<T>::Vertex(T in): info(in) {}
-/*
- * Auxiliary function to add an outgoing edge to a vertex (this),
- * with a given destination vertex (d) and edge weight (w).
- */
-template <class T>
-Edge<T> * Vertex<T>::addEdge(Vertex<T> *d, double w) {
-    auto newEdge = new Edge<T>(this, d, w);
+Edge* Vertex::addEdge(Vertex* d, double w) {
+    auto newEdge = new Edge(this, d, w);
     adj.push_back(newEdge);
     d->incoming.push_back(newEdge);
     return newEdge;
 }
 
-/*
- * Auxiliary function to remove an outgoing edge (with a given destination (d))
- * from a vertex (this).
- * Returns true if successful, and false if such edge does not exist.
- */
-template <class T>
-bool Vertex<T>::removeEdge(T in) {
+bool Vertex::removeEdge(const std::string& in) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
-        Edge<T> *edge = *it;
-        Vertex<T> *dest = edge->getDest();
+        Edge* edge = *it;
+        Vertex* dest = edge->getDest();
         if (dest->getInfo() == in) {
             it = adj.erase(it);
             deleteEdge(edge);
-            removedEdge = true; // allows for multiple edges to connect the same pair of vertices (multigraph)
+            removedEdge = true;
         }
         else {
             it++;
@@ -199,98 +145,81 @@ bool Vertex<T>::removeEdge(T in) {
     return removedEdge;
 }
 
-/*
- * Auxiliary function to remove an outgoing edge of a vertex.
- */
-template <class T>
-void Vertex<T>::removeOutgoingEdges() {
+void Vertex::removeOutgoingEdges() {
     auto it = adj.begin();
     while (it != adj.end()) {
-        Edge<T> *edge = *it;
+        Edge* edge = *it;
         it = adj.erase(it);
         deleteEdge(edge);
     }
 }
 
-template <class T>
-bool Vertex<T>::operator<(Vertex<T> & vertex) const {
+bool Vertex::operator<(const Vertex& vertex) const {
     return this->dist < vertex.dist;
 }
 
-template <class T>
-T Vertex<T>::getInfo() const {
+std::string Vertex::getInfo() const {
     return this->info;
 }
 
-template <class T>
-std::vector<Edge<T>*> Vertex<T>::getAdj() const {
+std::vector<Edge*> Vertex::getAdj() const {
     return this->adj;
 }
 
-template <class T>
-bool Vertex<T>::isVisited() const {
+bool Vertex::isVisited() const {
     return this->visited;
 }
 
-template <class T>
-bool Vertex<T>::isProcessing() const {
+bool Vertex::isProcessing() const {
     return this->processing;
 }
 
-template <class T>
-unsigned int Vertex<T>::getIndegree() const {
+unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
 
-template <class T>
-double Vertex<T>::getDist() const {
+double Vertex::getDist() const {
     return this->dist;
 }
 
-template <class T>
-Edge<T> *Vertex<T>::getPath() const {
+Edge* Vertex::getPath() const {
     return this->path;
 }
 
-template <class T>
-std::vector<Edge<T> *> Vertex<T>::getIncoming() const {
+std::vector<Edge*> Vertex::getIncoming() const {
     return this->incoming;
 }
 
-template <class T>
-void Vertex<T>::setInfo(T in) {
-    this->info = in;
+void Vertex::setInfo(const std::string& info) {
+    this->info = info;
 }
 
-template <class T>
-void Vertex<T>::setVisited(bool visited) {
+void Vertex::setVisited(bool visited) {
     this->visited = visited;
 }
 
-template <class T>
-void Vertex<T>::setProcesssing(bool processing) {
+void Vertex::setProcessing(bool processing) {
     this->processing = processing;
 }
 
-template <class T>
-void Vertex<T>::setIndegree(unsigned int indegree) {
+void Vertex::setIndegree(unsigned int indegree) {
     this->indegree = indegree;
 }
 
-template <class T>
-void Vertex<T>::setDist(double dist) {
+int Vertex::getType() const {
+    return type_;
+}
+
+void Vertex::setDist(double dist) {
     this->dist = dist;
 }
 
-template <class T>
-void Vertex<T>::setPath(Edge<T> *path) {
+void Vertex::setPath(Edge* path) {
     this->path = path;
 }
 
-template <class T>
-void Vertex<T>::deleteEdge(Edge<T> *edge) {
-    Vertex<T> *dest = edge->getDest();
-    // Remove the corresponding edge from the incoming list
+void Vertex::deleteEdge(Edge* edge) {
+    Vertex* dest = edge->getDest();
     auto it = dest->incoming.begin();
     while (it != dest->incoming.end()) {
         if ((*it)->getOrig()->getInfo() == info) {
@@ -303,251 +232,181 @@ void Vertex<T>::deleteEdge(Edge<T> *edge) {
     delete edge;
 }
 
-/********************** Edge  ****************************/
+Edge::Edge(Vertex* orig, Vertex* dest, double w) : orig(orig), dest(dest), weight(w), reverse(nullptr), flow(0) {}
 
-template <class T>
-Edge<T>::Edge(Vertex<T> *orig, Vertex<T> *dest, double w): orig(orig), dest(dest), weight(w) {}
-
-template <class T>
-Vertex<T> * Edge<T>::getDest() const {
+Vertex* Edge::getDest() const {
     return this->dest;
 }
 
-template <class T>
-double Edge<T>::getWeight() const {
+double Edge::getWeight() const {
     return this->weight;
 }
 
-template <class T>
-Vertex<T> * Edge<T>::getOrig() const {
+Vertex* Edge::getOrig() const {
     return this->orig;
 }
 
-template <class T>
-Edge<T> *Edge<T>::getReverse() const {
+Edge* Edge::getReverse() const {
     return this->reverse;
 }
 
-template <class T>
-bool Edge<T>::isSelected() const {
+bool Edge::isSelected() const {
     return this->selected;
 }
 
-template <class T>
-double Edge<T>::getFlow() const {
+double Edge::getFlow() const {
     return flow;
 }
 
-template <class T>
-void Edge<T>::setSelected(bool selected) {
+void Edge::setSelected(bool selected) {
     this->selected = selected;
 }
 
-template <class T>
-void Edge<T>::setReverse(Edge<T> *reverse) {
+void Edge::setReverse(Edge* reverse) {
     this->reverse = reverse;
 }
 
-template <class T>
-void Edge<T>::setFlow(double flow) {
+void Edge::setFlow(double flow) {
     this->flow = flow;
 }
 
-/********************** Graph  ****************************/
-
-template <class T>
-int Graph<T>::getNumVertex() const {
-    return vertexSet.size();
+Graph::~Graph() {
+    deleteMatrix(distMatrix, vertexSet.size());
+    deleteMatrix(pathMatrix, vertexSet.size());
 }
 
-template <class T>
-std::vector<Vertex<T> *> Graph<T>::getVertexSet() const {
-    return vertexSet;
-}
-
-/*
- * Auxiliary function to find a vertex with a given content.
- */
-template <class T>
-Vertex<T> * Graph<T>::findVertex(const T &in) const {
-    for (auto v : vertexSet)
-        if (v->getInfo() == in)
-            return v;
+Vertex* Graph::findVertex(const std::string& in) const {
+    auto it = vertexMap.find(in);
+    if (it != vertexMap.end()) {
+        return it->second;
+    }
     return nullptr;
 }
 
-/*
- * Finds the index of the vertex with a given content.
- */
-template <class T>
-int Graph<T>::findVertexIdx(const T &in) const {
-    for (unsigned i = 0; i < vertexSet.size(); i++)
-        if (vertexSet[i]->getInfo() == in)
-            return i;
-    return -1;
-}
-/*
- *  Adds a vertex with a given content or info (in) to a graph (this).
- *  Returns true if successful, and false if a vertex with that content already exists.
- */
-template <class T>
-bool Graph<T>::addVertex(const T &in) {
-    if (findVertex(in) != nullptr)
+bool Graph::addVertex(const std::string& in, const int type) {
+    if (findVertex(in) != nullptr) {
         return false;
-    vertexSet.push_back(new Vertex<T>(in));
+    }
+    Vertex* vertex = new Vertex(in,type);
+    vertexSet.push_back(vertex);
+    vertexMap[in] = vertex;
     return true;
 }
 
-/*
- *  Removes a vertex with a given content (in) from a graph (this), and
- *  all outgoing and incoming edges.
- *  Returns true if successful, and false if such vertex does not exist.
- */
-template <class T>
-bool Graph<T>::removeVertex(const T &in) {
-    for (auto it = vertexSet.begin(); it != vertexSet.end(); it++) {
-        if ((*it)->getInfo() == in) {
-            auto v = *it;
-            v->removeOutgoingEdges();
-            for (auto u : vertexSet) {
-                u->removeEdge(v->getInfo());
-            }
-            vertexSet.erase(it);
-            delete v;
-            return true;
-        }
+bool Graph::removeVertex(const std::string& in) {
+    auto it = vertexMap.find(in);
+    if (it == vertexMap.end()) {
+        return false;
     }
-    return false;
+    Vertex* v = it->second;
+    for (auto u : vertexSet) {
+        u->removeEdge(v->getInfo());
+    }
+    vertexSet.erase(std::remove(vertexSet.begin(), vertexSet.end(), v), vertexSet.end());
+    vertexMap.erase(it);
+    delete v;
+    return true;
 }
 
-/*
- * Adds an edge to a graph (this), given the contents of the source and
- * destination vertices and the edge weight (w).
- * Returns true if successful, and false if the source or destination vertex does not exist.
- */
-template <class T>
-bool Graph<T>::addEdge(const T &sourc, const T &dest, double w) {
-    auto v1 = findVertex(sourc);
-    auto v2 = findVertex(dest);
-    if (v1 == nullptr || v2 == nullptr)
+bool Graph::addEdge(const std::string& source, const std::string& dest, double w) {
+    Vertex* v1 = findVertex(source);
+    Vertex* v2 = findVertex(dest);
+    if (v1 == nullptr || v2 == nullptr) {
         return false;
+    }
     v1->addEdge(v2, w);
     return true;
 }
 
-/*
- * Removes an edge from a graph (this).
- * The edge is identified by the source (sourc) and destination (dest) contents.
- * Returns true if successful, and false if such edge does not exist.
- */
-template <class T>
-bool Graph<T>::removeEdge(const T &sourc, const T &dest) {
-    Vertex<T> * srcVertex = findVertex(sourc);
+bool Graph::removeEdge(const std::string& source, const std::string& dest) {
+    Vertex* srcVertex = findVertex(source);
     if (srcVertex == nullptr) {
         return false;
     }
     return srcVertex->removeEdge(dest);
 }
 
-template <class T>
-bool Graph<T>::addBidirectionalEdge(const T &sourc, const T &dest, double w) {
-    auto v1 = findVertex(sourc);
-    auto v2 = findVertex(dest);
-    if (v1 == nullptr || v2 == nullptr)
+bool Graph::addBidirectionalEdge(const std::string& source, const std::string& dest, double w) {
+    Vertex* v1 = findVertex(source);
+    Vertex* v2 = findVertex(dest);
+    if (v1 == nullptr || v2 == nullptr) {
         return false;
-    auto e1 = v1->addEdge(v2, w);
-    auto e2 = v2->addEdge(v1, w);
+    }
+    Edge* e1 = v1->addEdge(v2, w);
+    Edge* e2 = v2->addEdge(v1, w);
     e1->setReverse(e2);
     e2->setReverse(e1);
     return true;
 }
 
-/****************** DFS ********************/
-
-/*
- * Performs a depth-first search (dfs) traversal in a graph (this).
- * Returns a vector with the contents of the vertices by dfs order.
- */
-template <class T>
-std::vector<T> Graph<T>::dfs() const {
-    std::vector<T> res;
-    for (auto v : vertexSet)
-        v->setVisited(false);
-    for (auto v : vertexSet)
-        if (!v->isVisited())
-            dfsVisit(v, res);
-    return res;
+int Graph::getNumVertex() const {
+    return vertexSet.size();
 }
 
-/*
- * Performs a depth-first search (dfs) in a graph (this) from the source node.
- * Returns a vector with the contents of the vertices by dfs order.
- */
-template <class T>
-std::vector<T> Graph<T>::dfs(const T & source) const {
-    std::vector<int> res;
-    // Get the source vertex
-    auto s = findVertex(source);
-    if (s == nullptr) {
-        return res;
-    }
-    // Set that no vertex has been visited yet
+std::vector<Vertex*> Graph::getVertexSet() const {
+    return vertexSet;
+}
+
+std::unordered_map<std::string, Vertex*> Graph::getVertexMap() const {
+    return vertexMap;
+}
+
+std::vector<std::string> Graph::dfs() const {
+    std::vector<std::string> res;
     for (auto v : vertexSet) {
         v->setVisited(false);
     }
-    // Perform the actual DFS using recursion
-    dfsVisit(s, res);
-
+    for (auto v : vertexSet) {
+        if (!v->isVisited()) {
+            dfsVisit(v, res);
+        }
+    }
     return res;
 }
 
-/*
- * Auxiliary function that visits a vertex (v) and its adjacent, recursively.
- * Updates a parameter with the list of visited node contents.
- */
-template <class T>
-void Graph<T>::dfsVisit(Vertex<T> *v, std::vector<T> & res) const {
+std::vector<std::string> Graph::dfs(const std::string& source) const {
+    std::vector<std::string> res;
+    Vertex* s = findVertex(source);
+    if (s == nullptr) {
+        return res;
+    }
+    for (auto v : vertexSet) {
+        v->setVisited(false);
+    }
+    dfsVisit(s, res);
+    return res;
+}
+
+void Graph::dfsVisit(Vertex* v, std::vector<std::string>& res) const {
     v->setVisited(true);
     res.push_back(v->getInfo());
-    for (auto & e : v->getAdj()) {
-        auto w = e->getDest();
+    for (auto& e : v->getAdj()) {
+        Vertex* w = e->getDest();
         if (!w->isVisited()) {
             dfsVisit(w, res);
         }
     }
 }
 
-/****************** BFS ********************/
-/*
- * Performs a breadth-first search (bfs) in a graph (this), starting
- * from the vertex with the given source contents (source).
- * Returns a vector with the contents of the vertices by bfs order.
- */
-template <class T>
-std::vector<T> Graph<T>::bfs(const T & source) const {
-    std::vector<int> res;
-    // Get the source vertex
-    auto s = findVertex(source);
+std::vector<std::string> Graph::bfs(const std::string& source) const {
+    std::vector<std::string> res;
+    Vertex* s = findVertex(source);
     if (s == nullptr) {
         return res;
     }
-
-    // Set that no vertex has been visited yet
     for (auto v : vertexSet) {
         v->setVisited(false);
     }
-
-    // Perform the actual BFS using a queue
-    std::queue<Vertex<T> *> q;
+    std::queue<Vertex*> q;
     q.push(s);
     s->setVisited(true);
     while (!q.empty()) {
-        auto v = q.front();
+        Vertex* v = q.front();
         q.pop();
         res.push_back(v->getInfo());
-        for (auto & e : v->getAdj()) {
-            auto w = e->getDest();
-            if ( ! w->isVisited()) {
+        for (auto& e : v->getAdj()) {
+            Vertex* w = e->getDest();
+            if (!w->isVisited()) {
                 q.push(w);
                 w->setVisited(true);
             }
@@ -556,64 +415,41 @@ std::vector<T> Graph<T>::bfs(const T & source) const {
     return res;
 }
 
-/****************** isDAG  ********************/
-/*
- * Performs a depth-first search in a graph (this), to determine if the graph
- * is acyclic (acyclic directed graph or DAG).
- * During the search, a cycle is found if an edge connects to a vertex
- * that is being processed in the stack of recursive calls (see theoretical classes).
- * Returns true if the graph is acyclic, and false otherwise.
- */
-
-template <class T>
-bool Graph<T>::isDAG() const {
+bool Graph::isDAG() const {
     for (auto v : vertexSet) {
         v->setVisited(false);
-        v->setProcesssing(false);
+        v->setProcessing(false);
     }
     for (auto v : vertexSet) {
-        if (! v->isVisited()) {
-            if ( ! dfsIsDAG(v) ) return false;
+        if (!v->isVisited()) {
+            if (!dfsIsDAG(v)) {
+                return false;
+            }
         }
     }
     return true;
 }
 
-/**
- * Auxiliary function that visits a vertex (v) and its adjacent, recursively.
- * Returns false (not acyclic) if an edge to a vertex in the stack is found.
- */
-template <class T>
-bool Graph<T>::dfsIsDAG(Vertex<T> *v) const {
+bool Graph::dfsIsDAG(Vertex* v) const {
     v->setVisited(true);
-    v->setProcesssing(true);
+    v->setProcessing(true);
     for (auto e : v->getAdj()) {
-        auto w = e->getDest();
-        if (w->isProcessing()) return false;
-        if (! w->isVisited()) {
-            if (! dfsIsDAG(w)) return false;
+        Vertex* w = e->getDest();
+        if (w->isProcessing()) {
+            return false;
+        }
+        if (!w->isVisited()) {
+            if (!dfsIsDAG(w)) {
+                return false;
+            }
         }
     }
-    v->setProcesssing(false);
+    v->setProcessing(false);
     return true;
 }
 
-/****************** toposort ********************/
-//=============================================================================
-// Exercise 1: Topological Sorting
-//=============================================================================
-// TODO
-/*
- * Performs a topological sorting of the vertices of a graph (this).
- * Returns a vector with the contents of the vertices by topological order.
- * If the graph has cycles, returns an empty vector.
- * Follows the algorithm described in theoretical classes.
- */
-
-template<class T>
-std::vector<T> Graph<T>::topsort() const {
-    std::vector<int> res;
-
+std::vector<std::string> Graph::topsort() const {
+    std::vector<std::string> res;
     for (auto v : vertexSet) {
         v->setIndegree(0);
     }
@@ -623,130 +459,62 @@ std::vector<T> Graph<T>::topsort() const {
             e->getDest()->setIndegree(indegree + 1);
         }
     }
-
-    std::queue<Vertex<T> *> q;
+    std::queue<Vertex*> q;
     for (auto v : vertexSet) {
         if (v->getIndegree() == 0) {
             q.push(v);
         }
     }
-
-    while( !q.empty() ) {
-        Vertex<T> * v = q.front();
+    while (!q.empty()) {
+        Vertex* v = q.front();
         q.pop();
         res.push_back(v->getInfo());
-        for(auto e : v->getAdj()) {
-            auto w = e->getDest();
+        for (auto e : v->getAdj()) {
+            Vertex* w = e->getDest();
             w->setIndegree(w->getIndegree() - 1);
-            if(w->getIndegree() == 0) {
+            if (w->getIndegree() == 0) {
                 q.push(w);
             }
         }
     }
-
-    if ( res.size() != vertexSet.size() ) {
-        //std::cout << "Impossible topological ordering!" << std::endl;
+    if (res.size() != vertexSet.size()) {
         res.clear();
-        return res;
     }
-
     return res;
 }
 
-inline void deleteMatrix(int **m, int n) {
+int Graph::findVertexIdx(const std::string& in) const {
+    for (unsigned i = 0; i < vertexSet.size(); i++) {
+        if (vertexSet[i]->getInfo() == in) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+void Graph::deleteMatrix(int** m, int n) {
     if (m != nullptr) {
-        for (int i = 0; i < n; i++)
-            if (m[i] != nullptr)
-                delete [] m[i];
-        delete [] m;
+        for (int i = 0; i < n; i++) {
+            if (m[i] != nullptr) {
+                delete[] m[i];
+            }
+        }
+        delete[] m;
     }
 }
 
-inline void deleteMatrix(double **m, int n) {
+void Graph::deleteMatrix(double** m, int n) {
     if (m != nullptr) {
-        for (int i = 0; i < n; i++)
-            if (m[i] != nullptr)
-                delete [] m[i];
-        delete [] m;
+        for (int i = 0; i < n; i++) {
+            if (m[i] != nullptr) {
+                delete[] m[i];
+            }
+        }
+        delete[] m;
     }
 }
 
-template <class T>
-Graph<T>::~Graph() {
-    deleteMatrix(distMatrix, vertexSet.size());
-    deleteMatrix(pathMatrix, vertexSet.size());
-}
-
-#endif /* DA_TP_CLASSES_GRAPH */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//class WaterReservoir;
-//class PumpingStations;
-//class DeliverySites;
-//
-//class Graph {
-//public:
-//    Graph()=default;
-//
-//    WaterReservoir findWaterReservoir(const std::string& code){
-//        for(auto water_res: reservoirs_){
-//            if(water_res.first== code){
-//                return water_res.second;
-//            }
-//        }
-//    }
-//
-//
-//    void addPumpingStation(const std::string& code, const PumpingStations& ps) {
-//        pumpingStations_.emplace(code, ps);
-//    }
-//
-//    void addDeliverySite(const std::string& code, const DeliverySites& ds) {
-//        deliverySites_.emplace(code, ds);
-//    }
-//
-//    void addWaterReservoir(const std::string& code, const WaterReservoir& wr){
-//        reservoirs_.emplace(code,wr);
-//    }
-//
-//    void addEdge(const Pipes& pipe){
-//        pipes_.push_back(pipe);
-//    }
-//
-//    std::unordered_map<std::string, WaterReservoir> getReservoirs() const {
-//        return reservoirs_;
-//    }
-//    std::unordered_map<std::string, PumpingStations> getPumpingStations() const {
-//        return pumpingStations_;
-//    }
-//    std::unordered_map<std::string, DeliverySites> getDeliverySites() const {
-//        return deliverySites_;
-//    }
-//    std::vector<Pipes> getPipes() const {
-//        return pipes_;
-//    }
-//private:
-//    std::unordered_map<std::string, WaterReservoir> reservoirs_;
-//    std::unordered_map<std::string, PumpingStations> pumpingStations_;
-//    std::unordered_map<std::string, DeliverySites> deliverySites_;
-//    std::vector<Pipes> pipes_;
-//};
-
+#endif
 
 
 

@@ -2,13 +2,15 @@
 #include <iostream>
 using namespace std;
 
-template<class T>
-Window<T>::Window() {
-    data_ = Data<T>();
+Window::Window() {
+    data_ = Data();
 }
-template<class T>
-void Window<T>::launch(){
-    for(auto vertex : data_.getNetwork().getVertexSet()){
-        cout << vertex;
+
+void Window::launch(){
+    for(auto vertex : data_.getNetwork().getVertexSet()) {
+        if(vertex->getType()==0){
+            WaterReservoir water_reservoir = data_.findWaterReservoir(vertex->getInfo());
+            cout << water_reservoir.getCode() << " " << water_reservoir.getMunicipality() << endl;
+        }
     }
 }

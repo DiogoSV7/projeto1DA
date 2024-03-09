@@ -8,9 +8,6 @@ WaterReservoir::WaterReservoir(string water_reservoir_name, string municipality,
     this->code_=code;
     this->id_=id;
     this->max_delivery_=max_delivery;
-    this->visited_=false;
-    this->processing_=false;
-    this->indegree_=false;
 }
 
 const string WaterReservoir::getWaterReservoirName() const {
@@ -31,16 +28,4 @@ const int WaterReservoir::getId() const {
 
 const int WaterReservoir::getMaxDelivery() const {
     return max_delivery_;
-}
-
-const int WaterReservoir::getIndegree() const {
-    return indegree_;
-}
-
-const bool WaterReservoir::isProcessing() const {
-    return processing_;
-}
-
-const bool WaterReservoir::isVisited() const {
-    return visited_;
 }
