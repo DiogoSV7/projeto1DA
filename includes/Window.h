@@ -8,6 +8,7 @@ class Window{
 public:
     Window();
     void launch();
+    void displayMaxWater(const std::unordered_map<std::string, double>& max_water_map);
 private:
     Data data_;
 

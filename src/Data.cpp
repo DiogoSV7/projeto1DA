@@ -1,19 +1,16 @@
 #include "../includes/Data.h"
 #include <fstream>
-#include "../includes/WaterReservoir.h"
-#include "../includes/PumpingStations.h"
-#include "../includes/DeliverySites.h"
 #include <sstream>
 using namespace std;
 
 
 Data::Data() {
 
-    readPumpingStations();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+    readPumpingStations();
 
     readDeliverySites();
 
-    readWaterReservoir();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+    readWaterReservoir();
 
     readPipes();
 }
@@ -42,7 +39,7 @@ void Data::readWaterReservoir() {
         int id = stoi(id_string);
         int max_delivery = stoi(max_delivery_string);
         WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
-        water_reservoirs_.push_back(water_res);
+        water_reservoirs_.insert(water_res);
         network_.addVertex(code_string,0);
     }
 }
@@ -68,7 +65,7 @@ void Data::readPumpingStations() {
         getline(pumpingStationsFile, coma);
         int id = stoi(id_string);
         PumpingStations pump_sta(id, code);
-        pumping_stations_.push_back(pump_sta);
+        pumping_stations_.insert(pump_sta);
         network_.addVertex(code, 1);
     }
 }
@@ -85,22 +82,29 @@ void Data::readDeliverySites() {
     }
 
     string header;
-    getline(deliverySitesFile,header);
+    getline(deliverySitesFile, header);
 
-    string city, id_string, code, demand_string, population_string;
-    while(getline(deliverySitesFile, city, ',')) {
-        getline(deliverySitesFile, id_string, ',');
-        getline(deliverySitesFile, code, ',');
-        getline(deliverySitesFile, demand_string, ',');
-        getline(deliverySitesFile, population_string);
+    string line;
+    while(getline(deliverySitesFile, line)) {
+        stringstream ss(line);
+        string city, id_string, code, demand_string, population_string;
+
+        getline(ss, city, ',');
+        getline(ss, id_string, ',');
+        getline(ss, code, ',');
+        getline(ss, demand_string, ',');
+        getline(ss, population_string, ',');
+
+        population_string.erase(remove(population_string.begin(), population_string.end(), '"'), population_string.end());
+        city.erase(remove(city.begin(), city.end(), ' '), city.end());
         int id = stoi(id_string);
         double demand = stod(demand_string);
+        population_string.erase(remove(population_string.begin(), population_string.end(), ','), population_string.end());
         DeliverySites del_site(city, id, code, demand, population_string);
-        delivery_sites_.push_back(del_site);
-        network_.addVertex(code,2);
+        delivery_sites_.insert(del_site);
+        network_.addVertex(code, 2);
     }
 }
-
 
 void Data::readPipes() {
     static const string PIPES_FILEPATH = "../dataset/Pipes_Madeira.csv";
@@ -138,15 +142,15 @@ Graph Data::getNetwork(){
     return network_;
 }
 
-vector<WaterReservoir> Data::getWaterReservoirs() const {
+unordered_set<WaterReservoir> Data::getWaterReservoirs() const {
     return water_reservoirs_;
 }
 
-vector<PumpingStations> Data::getPumpingStations() const {
+unordered_set<PumpingStations> Data::getPumpingStations() const {
     return pumping_stations_;
 }
 
-vector<DeliverySites> Data::getDeliverySites() const{
+unordered_set<DeliverySites> Data::getDeliverySites() const{
     return delivery_sites_;
 }
 
@@ -169,105 +173,119 @@ PumpingStations Data::findPumpingStation(const std::string code) const {
 }
 
 DeliverySites Data::findDeliverySite(const std::string code) const {
-    for(auto& it : delivery_sites_){
-        if(it.getCode()==code){
+    for(auto& it : delivery_sites_) {
+        if (it.getCode() == code) {
             return it;
         }
     }
     throw std::runtime_error("Delivery site not found");
 }
 
-/*int Data::maxWaterCity(const string& city_name){
 
 
-    return 0;
+std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
+    std::unordered_map<std::string, double> max_water_map;
+
+    Vertex* target_vertex = nullptr;
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 2 && vertex->getInfo() == delivery_site_code) {
+            target_vertex = vertex;
+            break;
+        }
+    }
+
+    if (target_vertex == nullptr) {
+        throw std::logic_error("Delivery site with the specified code not found");
+    }
+
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 0) { // Water reservoir
+            edmondsKarp(vertex->getInfo(), target_vertex->getInfo());
+
+            double max_flow = 0;
+            for (auto e : target_vertex->getIncoming()) {
+                max_flow += e->getFlow();
+            }
+            max_water_map[vertex->getInfo()] = max_flow;
+        }
+    }
+
+    return max_water_map;
 }
 
-void testAndVisit(std::queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, double residual) {
-    // Check if the vertex 'w' is not visited and there is residual capacity
-    if (! w->isVisited() && residual > 0) {
-    // Mark 'w' as visited, set the path through which it was reached, and enqueue it
-    w->setVisited(true);
-    w->setPath(e);
-    q.push(w);
+
+
+void Data::testAndVisit(std::queue<Vertex*>& q, Edge* e, Vertex* w, double residual) {
+    if (!w->isVisited() && residual > 0) {
+        w->setVisited(true);
+        w->setPath(e);
+        q.push(w);
     }
 }
-// Function to find an augmenting path using Breadth-First Search
 
-bool findAugmentingPath(Graph<T> *g, Vertex<T> *s, Vertex<T> *t) {
-// Mark all vertices as not visited
-    for(auto v : g->getVertexSet()) {
+bool Data::findAugmentingPath(Vertex* s, Vertex* t) {
+    for (auto v : network_.getVertexSet()) {
         v->setVisited(false);
     }
-// Mark the source vertex as visited and enqueue it
     s->setVisited(true);
-    std::queue<Vertex<T> *> q;
+    std::queue<Vertex*> q;
     q.push(s);
-// BFS to find an augmenting path
-    while( ! q.empty() && ! t->isVisited()) {
+    while (!q.empty() && !t->isVisited()) {
         auto v = q.front();
         q.pop();
-// Process outgoing edges
-        for(auto e: v->getAdj()) {
+        for (auto e : v->getAdj()) {
             testAndVisit(q, e, e->getDest(), e->getWeight() - e->getFlow());
         }
-// Process incoming edges
-        for(auto e: v->getIncoming()) {
+        for (auto e : v->getIncoming()) {
             testAndVisit(q, e, e->getOrig(), e->getFlow());
         }
     }
-// Return true if a path to the target is found, false otherwise
     return t->isVisited();
 }
-double findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t) {
+
+double Data::findMinResidualAlongPath(Vertex* s, Vertex* t) {
+    const double INF = std::numeric_limits<double>::max();
     double f = INF;
-// Traverse the augmenting path to find the minimum residual capacity
-    for (auto v = t; v != s; ) {
+    for (auto v = t; v != s;) {
         auto e = v->getPath();
         if (e->getDest() == v) {
             f = std::min(f, e->getWeight() - e->getFlow());
             v = e->getOrig();
-        }
-        else {
+        } else {
             f = std::min(f, e->getFlow());
             v = e->getDest();
         }
     }
-// Return the minimum residual capacity
     return f;
 }
-// Function to augment flow along the augmenting path with the given flow value
 
-void augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double f) {
-// Traverse the augmenting path and update the flow values accordingly
-for (auto v = t; v != s; ) {
-    auto e = v->getPath();
-    double flow = e->getFlow();
-    if (e->getDest() == v) {
-        e->setFlow(flow + f);
-        v = e->getOrig();
-        }
-    else {
-        e->setFlow(flow - f);
-        v = e->getDest();
+void Data::augmentFlowAlongPath(Vertex* s, Vertex* t, double f) {
+    for (auto v = t; v != s;) {
+        auto e = v->getPath();
+        double flow = e->getFlow();
+        if (e->getDest() == v) {
+            e->setFlow(flow + f);
+            v = e->getOrig();
+        } else {
+            e->setFlow(flow - f);
+            v = e->getDest();
         }
     }
 }
-void edmondsKarp(Graph<T> *g, int source, int target) {
-// Find source and target vertices in the graph
-    Vertex<T>* s = g->findVertex(source);
-    Vertex<T>* t = g->findVertex(target);
-// Validate source and target vertices
-    if (s == nullptr || t == nullptr || s == t)
+
+void Data::edmondsKarp(string source, string target) {
+    Vertex* s = network_.findVertex(source);
+    Vertex* t = network_.findVertex(target);
+    if (s == nullptr || t == nullptr || s == t) {
         throw std::logic_error("Invalid source and/or target vertex");
-// Initialize flow on all edges to 0
-    for (auto v : g->getVertexSet()) {
-        for (auto e: v->getAdj()) {
+    }
+    for (auto v : network_.getVertexSet()) {
+        for (auto e : v->getAdj()) {
             e->setFlow(0);
         }
     }
-    while( findAugmentingPath(g, s, t) ) {
+    while (findAugmentingPath(s, t)) {
         double f = findMinResidualAlongPath(s, t);
         augmentFlowAlongPath(s, t, f);
     }
-}*/
+}

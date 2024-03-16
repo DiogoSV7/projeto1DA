@@ -30,3 +30,11 @@ const int WaterReservoir::getId() const {
 const int WaterReservoir::getMaxDelivery() const {
     return max_delivery_;
 }
+
+bool WaterReservoir::operator==(const WaterReservoir& other) const {
+    return code_ == other.code_;
+}
+
+bool WaterReservoir::operator!=(const WaterReservoir& other) const {
+    return !(*this == other);
+}
