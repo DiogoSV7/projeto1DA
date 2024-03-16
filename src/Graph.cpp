@@ -1,8 +1,5 @@
-//
-// Created by antero on 09-03-2024.
-//
 
-#include "Graph.h"
+#include "../includes/Graph.h"
 
 Vertex::Vertex(const std::string& in, const int type) : type_(type), info(in), visited(false), processing(false), indegree(0), dist(0), path(nullptr), queueIndex(0) {}
 

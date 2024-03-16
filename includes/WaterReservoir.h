@@ -13,6 +13,8 @@ public:
     const int getId() const;
     const std::string getCode() const;
     const int getMaxDelivery() const;
+    bool operator==(const WaterReservoir& other) const;
+    bool operator!=(const WaterReservoir& other) const;
 
 private:
     std::string water_reservoir_name_;
@@ -21,5 +23,18 @@ private:
     std::string code_;
     int max_delivery_;
 };
+
+namespace std {
+    template <>
+    struct hash<WaterReservoir> {
+        size_t operator()(const WaterReservoir& reservoir) const {
+            size_t hashName = hash<std::string>{}(reservoir.getWaterReservoirName());
+            size_t hashMunicipality = hash<std::string>{}(reservoir.getMunicipality());
+            size_t hashId = hash<int>{}(reservoir.getId());
+            size_t hashCode = hash<std::string>{}(reservoir.getCode());
+            return hashName ^ (hashMunicipality << 1) ^ (hashId << 2) ^ (hashCode << 3);
+        }
+    };
+}
 
 #endif //PROJETO1DA_WATERRESERVOIR_H
