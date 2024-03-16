@@ -1,19 +1,24 @@
 #include "../includes/Data.h"
 #include <fstream>
+#include "../includes/WaterReservoir.h"
+#include "../includes/PumpingStations.h"
+#include "../includes/DeliverySites.h"
 #include <sstream>
 using namespace std;
 
 
-template<class T>
-Data<T>::Data() {
-    readPipes();
-    readPumpingStations();
+Data::Data() {
+
+    readPumpingStations();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+
     readDeliverySites();
-    readWaterReservoir();
+
+    readWaterReservoir();//error --- solved it using std::move() on strings in the particular "vertex" constructor
+
+    readPipes();
 }
 
-template<class T>
-void Data<T>::readWaterReservoir() {
+void Data::readWaterReservoir() {
     static const string WATER_RESERVOIRS_FILEPATH = "../dataset/Reservoirs_Madeira.csv";
 
     ifstream waterReservoirsFile(WATER_RESERVOIRS_FILEPATH);
@@ -36,12 +41,13 @@ void Data<T>::readWaterReservoir() {
 
         int id = stoi(id_string);
         int max_delivery = stoi(max_delivery_string);
-        Vertex<T> water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
-        network_.addVertex(water_res);
+        WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
+        water_reservoirs_.push_back(water_res);
+        network_.addVertex(code_string,0);
     }
 }
-template<class T>
-void Data<T>::readPumpingStations() {
+
+void Data::readPumpingStations() {
     static const string PUMPING_STATIONS_FILEPATH = "../dataset/Stations_Madeira.csv";
 
     ifstream pumpingStationsFile(PUMPING_STATIONS_FILEPATH);
@@ -61,12 +67,14 @@ void Data<T>::readPumpingStations() {
         getline(pumpingStationsFile, code, ',');
         getline(pumpingStationsFile, coma);
         int id = stoi(id_string);
-        Vertex<T> pump_sta(id, code);
-        network_.addVertex(pump_sta);
+        PumpingStations pump_sta(id, code);
+        pumping_stations_.push_back(pump_sta);
+        network_.addVertex(code, 1);
     }
 }
-template<class T>
-void Data<T>::readDeliverySites() {
+
+
+void Data::readDeliverySites() {
     static const string DELIVERY_SITES_FILEPATH = "../dataset/Cities_Madeira.csv";
 
     ifstream deliverySitesFile(DELIVERY_SITES_FILEPATH);
@@ -87,12 +95,14 @@ void Data<T>::readDeliverySites() {
         getline(deliverySitesFile, population_string);
         int id = stoi(id_string);
         double demand = stod(demand_string);
-        Vertex<T> del_site(city, id, code, demand, population_string);
-        network_.addVertex(del_site);
+        DeliverySites del_site(city, id, code, demand, population_string);
+        delivery_sites_.push_back(del_site);
+        network_.addVertex(code,2);
     }
 }
-template<class T>
-void Data<T>::readPipes() {
+
+
+void Data::readPipes() {
     static const string PIPES_FILEPATH = "../dataset/Pipes_Madeira.csv";
 
     ifstream pipesFile(PIPES_FILEPATH);
@@ -112,29 +122,67 @@ void Data<T>::readPipes() {
         getline(pipesFile, direction_string);
         int capacity = stoi(capacity_string);
         int direction = stoi(direction_string);
-        Vertex<T>* source = network_.findVertex(serv_site_a);
-        Vertex<T>* sink = network_.findVertex(serv_site_b);
+        Vertex* source = network_.findVertex(serv_site_a);
+        Vertex* sink = network_.findVertex(serv_site_b);
         if (source != nullptr && sink != nullptr) {
             if (direction == 0) {
-                network_.addBidirectionalEdge(source, sink, capacity);
+                network_.addBidirectionalEdge(source->getInfo(), sink->getInfo(), capacity);
             } else {
-                network_.addEdge(source->getValue(), sink->getValue(), capacity);
+                network_.addEdge(source->getInfo(), sink->getInfo(), capacity);
             }
         }
     }
 }
-template<class T>
-Graph<T> Data<T>::getNetwork(){
+
+Graph Data::getNetwork(){
     return network_;
 }
-template<class T>
-int Data<T>::maxWaterCity(const string& city_name){
+
+vector<WaterReservoir> Data::getWaterReservoirs() const {
+    return water_reservoirs_;
+}
+
+vector<PumpingStations> Data::getPumpingStations() const {
+    return pumping_stations_;
+}
+
+vector<DeliverySites> Data::getDeliverySites() const{
+    return delivery_sites_;
+}
+
+WaterReservoir Data::findWaterReservoir(const std::string code) const {
+    for(auto& it : water_reservoirs_){
+        if(it.getCode()==code){
+            return it;
+        }
+    }
+    throw std::runtime_error("Water Reservoir not found");
+}
+
+PumpingStations Data::findPumpingStation(const std::string code) const {
+    for(auto& it : pumping_stations_){
+        if(it.getPumpingStationCode()==code){
+            return it;
+        }
+    }
+    throw std::runtime_error("Pumping station not found");
+}
+
+DeliverySites Data::findDeliverySite(const std::string code) const {
+    for(auto& it : delivery_sites_){
+        if(it.getCode()==code){
+            return it;
+        }
+    }
+    throw std::runtime_error("Delivery site not found");
+}
+
+/*int Data::maxWaterCity(const string& city_name){
 
 
     return 0;
 }
-// Function to test the given vertex 'w' and visit it if conditions are met
-template <class T>
+
 void testAndVisit(std::queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, double residual) {
     // Check if the vertex 'w' is not visited and there is residual capacity
     if (! w->isVisited() && residual > 0) {
@@ -145,7 +193,7 @@ void testAndVisit(std::queue< Vertex<T>*> &q, Edge<T> *e, Vertex<T> *w, double r
     }
 }
 // Function to find an augmenting path using Breadth-First Search
-template <class T>
+
 bool findAugmentingPath(Graph<T> *g, Vertex<T> *s, Vertex<T> *t) {
 // Mark all vertices as not visited
     for(auto v : g->getVertexSet()) {
@@ -171,7 +219,6 @@ bool findAugmentingPath(Graph<T> *g, Vertex<T> *s, Vertex<T> *t) {
 // Return true if a path to the target is found, false otherwise
     return t->isVisited();
 }
-template <class T>
 double findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t) {
     double f = INF;
 // Traverse the augmenting path to find the minimum residual capacity
@@ -190,7 +237,7 @@ double findMinResidualAlongPath(Vertex<T> *s, Vertex<T> *t) {
     return f;
 }
 // Function to augment flow along the augmenting path with the given flow value
-template <class T>
+
 void augmentFlowAlongPath(Vertex<T> *s, Vertex<T> *t, double f) {
 // Traverse the augmenting path and update the flow values accordingly
 for (auto v = t; v != s; ) {
@@ -206,7 +253,6 @@ for (auto v = t; v != s; ) {
         }
     }
 }
-template <class T>
 void edmondsKarp(Graph<T> *g, int source, int target) {
 // Find source and target vertices in the graph
     Vertex<T>* s = g->findVertex(source);
@@ -220,9 +266,8 @@ void edmondsKarp(Graph<T> *g, int source, int target) {
             e->setFlow(0);
         }
     }
-// While there is an augmenting path, augment the flow along the path
     while( findAugmentingPath(g, s, t) ) {
         double f = findMinResidualAlongPath(s, t);
         augmentFlowAlongPath(s, t, f);
     }
-}
+}*/
