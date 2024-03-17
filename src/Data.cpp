@@ -130,9 +130,13 @@ void Data::readPipes() {
         Vertex* sink = network_.findVertex(serv_site_b);
         if (source != nullptr && sink != nullptr) {
             if (direction == 0) {
+                Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
+                pipes_.insert(pipe);
                 network_.addBidirectionalEdge(source->getInfo(), sink->getInfo(), capacity);
             } else {
                 network_.addEdge(source->getInfo(), sink->getInfo(), capacity);
+                Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
+                pipes_.insert(pipe);
             }
         }
     }
@@ -181,10 +185,19 @@ DeliverySites Data::findDeliverySite(const std::string code) const {
     throw std::runtime_error("Delivery site not found");
 }
 
+Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_point_b) const {
+    for(const auto& pipe : pipes_) {
+        if ((pipe.getCitySourceName() == serv_point_a && pipe.getCitySinkName() == serv_point_b) ||
+            (pipe.getCitySourceName() == serv_point_b && pipe.getCitySinkName() == serv_point_a)) {
+            return pipe;
+        }
+    }
+    throw std::runtime_error("Pipes not found");
+}
 
 
 std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
-    std::unordered_map<std::string, double> max_water_map;
+    addSuperSourceAndSink("SuperSource", "SuperSink");
 
     Vertex* target_vertex = nullptr;
     for (auto vertex : network_.getVertexSet()) {
@@ -198,12 +211,13 @@ std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& de
         throw std::logic_error("Delivery site with the specified code not found");
     }
 
-    for (auto vertex : network_.getVertexSet()) {
-        if (vertex->getType() == 0) { // Water reservoir
-            edmondsKarp(vertex->getInfo(), target_vertex->getInfo());
+    edmondsKarp("SuperSource", target_vertex->getInfo());
 
+    std::unordered_map<std::string, double> max_water_map;
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 0) {
             double max_flow = 0;
-            for (auto e : target_vertex->getIncoming()) {
+            for (auto e : vertex->getAdj()) {
                 max_flow += e->getFlow();
             }
             max_water_map[vertex->getInfo()] = max_flow;
@@ -213,7 +227,26 @@ std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& de
     return max_water_map;
 }
 
+void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName) {
+    network_.addVertex(superSourceName, 0);
+    network_.addVertex(superSinkName, 2);
 
+    Vertex* superSource = network_.findVertex(superSourceName);
+    Vertex* superSink = network_.findVertex(superSinkName);
+
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 0) {
+            network_.addEdge(superSource->getInfo(), vertex->getInfo(), std::numeric_limits<double>::infinity());
+        }
+    }
+
+
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 2) {
+            network_.addEdge(vertex->getInfo(), superSink->getInfo(), std::numeric_limits<double>::infinity());
+        }
+    }
+}
 
 void Data::testAndVisit(std::queue<Vertex*>& q, Edge* e, Vertex* w, double residual) {
     if (!w->isVisited() && residual > 0) {

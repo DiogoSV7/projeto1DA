@@ -24,3 +24,13 @@ const int Pipes::getDirection() const {
     return direction_;
 }
 
+bool Pipes::operator==(const Pipes& other) const {
+    return (serv_point_a_ == other.serv_point_a_) &&
+           (serv_point_b_ == other.serv_point_b_) &&
+           (capacity_ == other.capacity_) &&
+           (direction_ == other.direction_);
+}
+
+bool Pipes::operator!=(const Pipes& other) const {
+    return !(*this == other);
+}

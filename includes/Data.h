@@ -7,6 +7,7 @@
 #include "WaterReservoir.h"
 #include "DeliverySites.h"
 #include "PumpingStations.h"
+#include "Pipes.h"
 #include "Graph.h"
 
 class Data {
@@ -29,8 +30,11 @@ class Data {
         double findMinResidualAlongPath(Vertex* s, Vertex* t);
         void augmentFlowAlongPath(Vertex* s, Vertex* t, double f);
         void edmondsKarp(std::string source, std::string target);
+        Pipes findPipes(const std::string serv_point_a, const std::string serv_point_b) const;
+        void addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName);
     private:
         Graph network_;
+        std::unordered_set<Pipes> pipes_;
         std::unordered_set<WaterReservoir> water_reservoirs_;
         std::unordered_set<PumpingStations> pumping_stations_;
         std::unordered_set<DeliverySites> delivery_sites_;

@@ -9,8 +9,7 @@ Window::Window() {
 }
 
 void Window::launch(){
-    auto max_water_map = data_.maxWaterCity("C_2");
-    cout << "Max water map size: " << max_water_map.size() << endl;
+    auto max_water_map = data_.maxWaterCity("C_4");
     displayMaxWater(max_water_map);
 }
 
