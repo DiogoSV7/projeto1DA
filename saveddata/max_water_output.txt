@@ -1,5 +1,5 @@
-SuperSource: 160
-R_4: 160
+SuperSource: 60
+R_4: 0
 R_3: 0
-R_2: 0
-R_1: 0
+R_2: 40
+R_1: 20
