@@ -1,24 +1,25 @@
-//
-// Created by tiago on 17-03-2024.
-//
-
 #ifndef PROJETO1DA_MENU_H
 #define PROJETO1DA_MENU_H
 
-
-
-
-#include "Window.h"
+#include "Data.h"
 
 
 class Menu {
 public:
     Menu();
     void showMenu();
+    void displayDisplayMenu() const;
     static void drawTop();
     static void drawBottom();
+    void displayWaterNeeds();
+    int displayAllCitiesMaxWater();
+    int displayMaxWater(std::string city);
+    int extractNumberFromCode(const std::string& code);
+    void displayAllWaterReservoirs() const;
+    void displayAllPumpingStations() const;
+    void displayAllDeliverySites() const;
 private:
-    Window window_;
+    Data data_;
 };
 
 

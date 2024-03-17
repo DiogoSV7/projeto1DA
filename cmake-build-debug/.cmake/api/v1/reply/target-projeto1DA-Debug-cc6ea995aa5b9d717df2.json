@@ -35,7 +35,7 @@
 			"compileCommandFragments" : 
 			[
 				{
-					"fragment" : "-g -fdiagnostics-color=always"
+					"fragment" : "-g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.2.sdk -fcolor-diagnostics"
 				}
 			],
 			"language" : "CXX",
@@ -55,9 +55,8 @@
 				8,
 				10,
 				11,
-				12,
-				14,
-				15
+				13,
+				14
 			]
 		}
 	],
@@ -96,9 +95,8 @@
 				8,
 				10,
 				11,
-				12,
-				14,
-				15
+				13,
+				14
 			]
 		},
 		{
@@ -111,8 +109,8 @@
 				4,
 				5,
 				9,
-				13,
-				16
+				12,
+				15
 			]
 		}
 	],
@@ -182,12 +180,6 @@
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
 			"path" : "src/DeliverySites.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
-			"path" : "src/Window.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{

@@ -23,7 +23,7 @@ class Data {
         std::unordered_set<WaterReservoir> getWaterReservoirs() const;
         std::unordered_set<PumpingStations> getPumpingStations() const;
         std::unordered_set<DeliverySites> getDeliverySites() const;
-        Graph getNetwork();
+        Graph getNetwork() const;
         std::unordered_map<std::string, double> maxWaterCity(const std::string& city_name);
         std::vector<std::pair<std::string, double>> checkWaterNeeds();
         void testAndVisit(std::queue<Vertex*>& q, Edge* e, Vertex* w, double residual);
@@ -33,8 +33,14 @@ class Data {
         void edmondsKarp(std::string source, std::string target);
         Pipes findPipes(const std::string serv_point_a, const std::string serv_point_b) const;
         void addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName);
+        void removeWaterReservoir(const std::string& water_reservoir_code);
+        void removeDeliverySite(const std::string& delivery_site_code);
+        void removePumpingStations(const std::string& pumping_station_code);
+        void removePipe(const std::string& serv_site_a, const std::string& serv_site_b);
+        void restoreGraph();
     private:
         Graph network_;
+        Graph original_graph_;
         std::unordered_set<Pipes> pipes_;
         std::unordered_set<WaterReservoir> water_reservoirs_;
         std::unordered_set<PumpingStations> pumping_stations_;

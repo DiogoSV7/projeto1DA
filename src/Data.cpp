@@ -98,7 +98,6 @@ void Data::readDeliverySites() {
         getline(ss, population_string, ',');
 
         population_string.erase(remove(population_string.begin(), population_string.end(), '"'), population_string.end());
-        city.erase(remove(city.begin(), city.end(), ' '), city.end());
         int id = stoi(id_string);
         double demand = stod(demand_string);
         population_string.erase(remove(population_string.begin(), population_string.end(), ','), population_string.end());
@@ -144,7 +143,7 @@ void Data::readPipes() {
     }
 }
 
-Graph Data::getNetwork(){
+Graph Data::getNetwork() const{
     return network_;
 }
 
@@ -229,7 +228,6 @@ std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& de
 std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
     // Aqui vamos utilizar um vector, invés de um map, pq uma vez que não existe benefício em utilizar map pq vamos ter de percorrer o vetor inteiro na mesma
     std::vector<std::pair<std::string, double>> deficits;
-    // Iterate through each vertex in the network
     for (auto vertex : network_.getVertexSet()) {
         if (vertex->getType() == 2 && vertex->getInfo() != "SuperSink") {
             DeliverySites del_site = findDeliverySite(vertex->getInfo());
@@ -350,3 +348,33 @@ void Data::edmondsKarp(string source, string target) {
         augmentFlowAlongPath(s, t, f);
     }
 }
+
+void Data::removeWaterReservoir(const std::string &water_reservoir_code){
+    network_.removeVertex(water_reservoir_code);
+}
+
+void Data::removePumpingStations(const std::string &pumping_station_code) {
+    network_.removeVertex(pumping_station_code);
+}
+
+void Data::removeDeliverySite(const std::string &delivery_site_code) {
+    network_.removeVertex(delivery_site_code);
+}
+
+void Data::removePipe(const std::string &serv_site_a, const std::string &serv_site_b) {
+    network_.removeEdge(serv_site_a,serv_site_b);
+}
+
+void Data::restoreGraph() {
+    water_reservoirs_.clear();
+    pumping_stations_.clear();
+    delivery_sites_.clear();
+    pipes_.clear();
+
+    readWaterReservoir();
+    readPumpingStations();
+    readDeliverySites();
+    readPipes();
+    addSuperSourceAndSink("SuperSource", "SuperSink");
+}
+
