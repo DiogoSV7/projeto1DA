@@ -25,6 +25,7 @@ class Data {
         std::unordered_set<DeliverySites> getDeliverySites() const;
         Graph getNetwork();
         std::unordered_map<std::string, double> maxWaterCity(const std::string& city_name);
+        std::vector<std::pair<std::string, double>> checkWaterNeeds();
         void testAndVisit(std::queue<Vertex*>& q, Edge* e, Vertex* w, double residual);
         bool findAugmentingPath(Vertex* s, Vertex* t);
         double findMinResidualAlongPath(Vertex* s, Vertex* t);

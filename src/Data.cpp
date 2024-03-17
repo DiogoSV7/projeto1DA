@@ -13,6 +13,8 @@ Data::Data() {
     readWaterReservoir();
 
     readPipes();
+
+    addSuperSourceAndSink("SuperSource", "SuperSink");
 }
 
 void Data::readWaterReservoir() {
@@ -197,8 +199,6 @@ Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_poi
 
 
 std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
-    addSuperSourceAndSink("SuperSource", "SuperSink");
-
     Vertex* target_vertex = nullptr;
     for (auto vertex : network_.getVertexSet()) {
         if (vertex->getType() == 2 && vertex->getInfo() == delivery_site_code) {
@@ -210,7 +210,6 @@ std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& de
     if (target_vertex == nullptr) {
         throw std::logic_error("Delivery site with the specified code not found");
     }
-
     edmondsKarp("SuperSource", target_vertex->getInfo());
 
     std::unordered_map<std::string, double> max_water_map;
@@ -227,7 +226,37 @@ std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& de
     return max_water_map;
 }
 
+std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
+    // Aqui vamos utilizar um vector, invés de um map, pq uma vez que não existe benefício em utilizar map pq vamos ter de percorrer o vetor inteiro na mesma
+    std::vector<std::pair<std::string, double>> deficits;
+    // Iterate through each vertex in the network
+    for (auto vertex : network_.getVertexSet()) {
+        if (vertex->getType() == 2 && vertex->getInfo() != "SuperSink") {
+            DeliverySites del_site = findDeliverySite(vertex->getInfo());
+            double demand = del_site.getDemand();
+
+            edmondsKarp("SuperSource", del_site.getCode());
+
+            double total_flow = 0;
+            for (auto e : vertex->getIncoming()) {
+                total_flow += e->getFlow();
+            }
+
+            if (total_flow < demand) {
+                double deficit = demand - total_flow;
+                deficits.push_back(std::make_pair(del_site.getCode(), deficit));
+            }
+        }
+    }
+
+    return deficits;
+}
+
 void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName) {
+    WaterReservoir super_source(superSourceName, "Municipality", 0, superSourceName, std::numeric_limits<int>::max());
+    DeliverySites super_sink(superSinkName, 0, superSinkName, std::numeric_limits<double>::max(), "0");
+    water_reservoirs_.insert(super_source);
+    delivery_sites_.insert(super_sink);
     network_.addVertex(superSourceName, 0);
     network_.addVertex(superSinkName, 2);
 
@@ -239,7 +268,6 @@ void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::
             network_.addEdge(superSource->getInfo(), vertex->getInfo(), std::numeric_limits<double>::infinity());
         }
     }
-
 
     for (auto vertex : network_.getVertexSet()) {
         if (vertex->getType() == 2) {
