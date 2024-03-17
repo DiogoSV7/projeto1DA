@@ -9,27 +9,47 @@ Window::Window() {
 }
 
 void Window::launch(){
-    auto max_water_map = data_.maxWaterCity("C_9");
-    displayMaxWater(max_water_map);
-    auto water_needs_vector = data_.checkWaterNeeds();
-    displayWaterNeeds(water_needs_vector);
+    //auto max_water_map = data_.maxWaterCity("C_9");
+    //displayMaxWater(max_water_map);
+    //auto water_needs_vector = data_.checkWaterNeeds();
+    //displayWaterNeeds(water_needs_vector);
 }
 
-void Window::displayMaxWater(const std::unordered_map<std::string, double>& max_water_map) {
+int Window::displayMaxWater(string city) {
+    const std::unordered_map<string, double>& max_water_map = data_.maxWaterCity(city);
     std::ofstream outputFile("../saveddata/max_water_output.txt");
     if (outputFile.is_open()) {
-        for (const auto& pair : max_water_map) {
-            std::cout << pair.first << ": " << pair.second << std::endl;
-            outputFile << pair.first << ": " << pair.second << std::endl;
+        auto it = max_water_map.find("SuperSource");
+        if (it != max_water_map.end() ) {
+            std::cout << city << ": " << it->second << std::endl;
+            outputFile << city << ": " << it->second << std::endl;
+        } else {
+            std::cerr << "Error: No data found for SuperSource in max_water_map!" << std::endl;
+            return 1;
         }
         outputFile.close();
-        std::cout << "Output file created successfully!" << std::endl;
     } else {
         std::cerr << "Error: Unable to open output file!" << std::endl;
+        return 1;
     }
+    return 0;
+}
+int Window::displayAllCitiesMaxWater() {
+    const std::unordered_set<DeliverySites>& cities = data_.getDeliverySites();
+    for (const auto& city : cities) {
+        if(city.getCityName()=="SuperSource" || city.getCityName()=="SuperSink"){
+            continue;
+        }
+        if(displayMaxWater(city.getCode())!=0){
+            return 1;
+        }
+    }
+    return 0;
 }
 
-void Window::displayWaterNeeds(const std::vector<std::pair<std::string, double>>& water_needs_vector){
+
+void Window::displayWaterNeeds(){
+    const vector<pair<string, double>>& water_needs_vector = data_.checkWaterNeeds();
     if (water_needs_vector.empty()) {
         std::cout << "All delivery sites are adequately supplied. No deficits found." << std::endl;
         return;

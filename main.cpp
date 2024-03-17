@@ -1,9 +1,10 @@
 
-#include "includes/Window.h"
+
+#include "includes/Menu.h"
 
 
 int main() {
-    Window window;
-    window.launch();
+    Menu menu;
+    menu.showMenu();
     return 0;
 }

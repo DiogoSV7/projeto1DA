@@ -19,4 +19,6 @@ add_executable(projeto1DA main.cpp
         src/Window.cpp
         includes/MutablePriorityQueue.h
         src/Graph.cpp
+        src/Menu.cpp
+        includes/Menu.h
 )

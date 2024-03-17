@@ -8,10 +8,12 @@ class Window{
 public:
     Window();
     void launch();
-    void displayMaxWater(const std::unordered_map<std::string, double>& max_water_map);
-    void displayWaterNeeds(const std::vector<std::pair<std::string, double>>& water_needs_vector);
+    int displayMaxWater(std::string city);
+    int displayAllCitiesMaxWater();
+    void displayWaterNeeds();
 private:
     Data data_;
+
 
 };
 
