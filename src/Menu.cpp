@@ -255,10 +255,13 @@ void Menu::displayWaterNeeds(){
         return;
     }
 
-    std::cout << "Delivery sites with deficits:" << std::endl;
+    cout << "┌── Water Deficits ────────────────────────────────┐" << endl;
+    cout << "│" << setw(53) << "│" << endl;
     for (const auto& pair : water_needs_vector) {
-        std::cout << "Delivery Site code: " << pair.first << ", Deficit: " << pair.second << std::endl;
+        std::cout << "│ " << left << setw(20) << "Delivery Site code: " << left << setw(10) << pair.first << left << setw(10) << "Deficit: " << left << setw(9) <<  pair.second  << right << "│" << std::endl;
     }
+    cout << "│" << setw(53) << "│" << endl;
+    drawBottom();
 }
 
 void Menu::displayDisplayMenu() const {
@@ -271,7 +274,7 @@ void Menu::displayDisplayMenu() const {
         cout << "│     [1] Display Water Reservoirs                 │" << endl;
         cout << "│     [2] Display Pumping Stations                 │" << endl;
         cout << "│     [3] Display Delivery Sites                   │" << endl;
-        cout << "│     [Q] Quit Display Menu                        │" << endl; // Add a quit option
+        cout << "│     [Q] Quit Display Menu                        │" << endl; 
         cout << "│" << setw(53) << "│" << endl;
         drawBottom();
         cout << "Choose an option: ";

@@ -159,6 +159,7 @@ void Edge::setFlow(double flow) {
     deleteMatrix(pathMatrix, vertexSet.size());
 }*/
 
+
 Vertex* Graph::findVertex(const std::string& in) const {
     auto it = vertexMap.find(in);
     if (it != vertexMap.end()) {
