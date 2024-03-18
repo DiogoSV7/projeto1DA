@@ -349,9 +349,16 @@ void Data::edmondsKarp(string source, string target) {
     }
 }
 
-void Data::removeWaterReservoir(const std::string &water_reservoir_code){
+void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
     network_.removeVertex(water_reservoir_code);
 }
+
+/*vector<pair<std::string, double>> Data::removeWaterReservoir(const std::string &water_reservoir_code){
+    network_.removeVertex(water_reservoir_code);
+    water_reservoirs_.erase(findWaterReservoir(water_reservoir_code));
+    vector<pair<string, double>> affectedCities = identifyAffectedCities(water_reservoir_code);
+    return affectedCities;
+}*/
 
 void Data::removePumpingStations(const std::string &pumping_station_code) {
     network_.removeVertex(pumping_station_code);
@@ -378,3 +385,41 @@ void Data::restoreGraph() {
     addSuperSourceAndSink("SuperSource", "SuperSink");
 }
 
+/*std::unordered_set<std::string> Data::evaluateReservoirImpact(const std::string& reservoirCode) {
+    // Step 1: Find the water reservoir to be removed
+    WaterReservoir reservoir;
+    try {
+        reservoir = findWaterReservoir(reservoirCode);
+    } catch (const std::runtime_error& e) {
+        std::cerr << e.what() << std::endl;
+        return {}; // Return empty set if reservoir not found
+    }
+
+    // Step 2: Remove the water reservoir from the graph
+    removeWaterReservoir(reservoirCode);
+
+    // Step 3: Evaluate impact on delivery sites
+    std::unordered_set<std::string> affectedCities;
+    for (const auto& deliverySite : delivery_sites_) {
+        // Simulate max flow after removing reservoir
+        std::unordered_map<std::string, double> maxWaterMap;
+        try {
+            maxWaterMap = maxWaterCity(deliverySite.getCode());
+        } catch (const std::logic_error& e) {
+            std::cerr << e.what() << std::endl;
+            return {}; // Return empty set if delivery site not found
+        }
+
+        // Check if demand is met
+        if (maxWaterMap.find(deliverySite.getCode()) != maxWaterMap.end()) {
+            if (maxWaterMap[deliverySite.getCode()] < deliverySite.getDemand()) {
+                affectedCities.insert(deliverySite.getCode());
+            }
+        }
+    }
+
+    // Step 4: Restore graph to original state
+    restoreGraph();
+
+    return affectedCities;
+}*/
