@@ -4,7 +4,10 @@
 
 
 int main() {
-    Menu menu;
-    menu.showMenu();
+
+
+    Data d;
+    d.edmondsKarp("SuperSource","SuperSink");
+    std::cout << d.computePipeMaxDif() << " " << d.computePipeDifVar() << " " << d.computeAvgPipeDif() << std::endl;
     return 0;
 }

@@ -1,6 +1,7 @@
 #include "../includes/Data.h"
 #include <fstream>
 #include <sstream>
+#include <cmath>
 using namespace std;
 
 
@@ -197,6 +198,7 @@ Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_poi
 }
 
 
+
 std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
     Vertex* target_vertex = nullptr;
     for (auto vertex : network_.getVertexSet()) {
@@ -385,6 +387,50 @@ void Data::restoreGraph() {
     addSuperSourceAndSink("SuperSource", "SuperSink");
 }
 
+double Data::computeAvgPipeDif() {
+    double sum=0;
+    int count=0;
+    for(auto v: network_.getVertexSet()) {
+        if(v->getInfo()!="SuperSource" & v->getInfo()!="SuperSink") {
+            for(auto e :v->getAdj()) {
+                if(e->getDest()->getInfo()!="SuperSource" & e->getDest()->getInfo()!="SuperSink")
+                sum+=e->getWeight()-e->getFlow();
+            }
+            count+=v->getAdj().size();
+        }
+    }
+    return round(sum/count*1000)/1000;
+}
+
+double Data::computePipeDifVar() {
+    double sum=0;
+    double avg = computeAvgPipeDif();
+    int c=0;
+    for(auto v: network_.getVertexSet()) {
+        if(v->getInfo()!="SuperSource" & v->getInfo()!="SuperSink") {
+            for (auto e: v->getAdj()) {
+                if(e->getDest()->getInfo()!="SuperSource" & e->getDest()->getInfo()!="SuperSink") {
+                    sum = sum + (e->getWeight() - e->getFlow() - avg) * (e->getWeight() - e->getFlow() - avg);
+                }
+            }
+            c += v->getAdj().size();
+        }
+    }
+    return round(sum/c*1000)/1000;
+}
+
+double Data::computePipeMaxDif() {
+    int max=INT32_MIN;
+    for(auto v: network_.getVertexSet()) {
+        for(auto e :v->getAdj()) {
+            int dif = e->getWeight() - e->getFlow();
+            if (max < dif) {
+                max = dif;
+            }
+        }
+    }
+    return max;
+}
 /*std::unordered_set<std::string> Data::evaluateReservoirImpact(const std::string& reservoirCode) {
     // Step 1: Find the water reservoir to be removed
     WaterReservoir reservoir;
