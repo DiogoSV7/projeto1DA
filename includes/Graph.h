@@ -24,7 +24,7 @@ public:
     bool operator<(const Vertex& vertex) const;
 
     std::string getInfo() const;
-    int getType() const;
+    int getType() const; //water reservoirs-0; pumping stations-1 ; delivery sites-2
     std::vector<Edge*> getAdj() const;
     bool isVisited() const;
     bool isProcessing() const;

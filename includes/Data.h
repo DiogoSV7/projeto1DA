@@ -38,6 +38,15 @@ class Data {
         void removePumpingStations(const std::string& pumping_station_code);
         void removePipe(const std::string& serv_site_a, const std::string& serv_site_b);
         void restoreGraph();
+
+        double computeAvgPipeDif();
+        double computePipeDifVar();
+        double computePipeMaxDif();
+
+        void balanceLoadAcrossNetwork();
+
+        void checkBalance();
+
     private:
         Graph network_;
         Graph original_graph_;

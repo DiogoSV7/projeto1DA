@@ -57,10 +57,10 @@ RM = /snap/clion/265/bin/cmake/linux/x64/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/tiago/2ano2sem/DA/projeto1DA
+CMAKE_SOURCE_DIR = /home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/tiago/2ano2sem/DA/projeto1DA/cmake-build-debug
+CMAKE_BINARY_DIR = /home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tiago/2ano2sem/DA/projeto1DA/cmake-build-debug/CMakeFiles /home/tiago/2ano2sem/DA/projeto1DA/cmake-build-debug//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug/CMakeFiles /home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tiago/2ano2sem/DA/projeto1DA/cmake-build-debug/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -321,30 +321,6 @@ src/WaterReservoir.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/projeto1DA.dir/build.make CMakeFiles/projeto1DA.dir/src/WaterReservoir.cpp.s
 .PHONY : src/WaterReservoir.cpp.s
 
-src/Window.o: src/Window.cpp.o
-.PHONY : src/Window.o
-
-# target to build an object file
-src/Window.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/projeto1DA.dir/build.make CMakeFiles/projeto1DA.dir/src/Window.cpp.o
-.PHONY : src/Window.cpp.o
-
-src/Window.i: src/Window.cpp.i
-.PHONY : src/Window.i
-
-# target to preprocess a source file
-src/Window.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/projeto1DA.dir/build.make CMakeFiles/projeto1DA.dir/src/Window.cpp.i
-.PHONY : src/Window.cpp.i
-
-src/Window.s: src/Window.cpp.s
-.PHONY : src/Window.s
-
-# target to generate assembly for a file
-src/Window.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/projeto1DA.dir/build.make CMakeFiles/projeto1DA.dir/src/Window.cpp.s
-.PHONY : src/Window.cpp.s
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -378,9 +354,6 @@ help:
 	@echo "... src/WaterReservoir.o"
 	@echo "... src/WaterReservoir.i"
 	@echo "... src/WaterReservoir.s"
-	@echo "... src/Window.o"
-	@echo "... src/Window.i"
-	@echo "... src/Window.s"
 .PHONY : help
 
 
