@@ -1,3 +1,0 @@
-/home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug/CMakeFiles/projeto1DA.dir
-/home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/antero/Desktop/FEUP_UBUNTO/2semestre/DA/projeto1DA/cmake-build-debug/CMakeFiles/rebuild_cache.dir
