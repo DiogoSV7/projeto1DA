@@ -4,6 +4,7 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
@@ -93,8 +94,12 @@ void Menu::showMenu() {
                 cin >> key1;
                 switch (key1) {
                     case '1': {
+                        vector<string> v;
                         //percorrer lista de cidades e fazer a função displayMaxWater para cada uma
-                        if(displayAllCitiesMaxWater()==0){
+                        for(DeliverySites city: data_.getDeliverySites()){
+                            v.push_back(city.getCode());
+                        }
+                        if(displayMaxWater(v)==0){
                         }
                         break;
                     }
@@ -102,7 +107,13 @@ void Menu::showMenu() {
                         string city;
                         cout << "Choose a city (C_1 to C_9): ";
                         cin >> city;
-                        if(displayMaxWater(city)==0){
+                        auto vertex = data_.getNetwork().findVertex(city);
+                        if (vertex == NULL) {
+                            cout << "Wrong City Code"<< endl;
+                            break;
+                        }
+                        vector<string> v(1,city);
+                        if(displayMaxWater(v)==0){
                         }
                         break;
                     }
@@ -195,58 +206,98 @@ void Menu::showMenu() {
         }
     }
 }
-
-int Menu::displayMaxWater(std::string city){
-    const std::unordered_map<std::string, double>& max_water_map = data_.maxWaterCity(city);
-    std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
-
-    if (outputFile.is_open()) {
-        auto it = max_water_map.find("SuperSource");
-        if (it != max_water_map.end()) {
-            std::cout << "│" <<  std::setw(7) << city << " : " << left << setw(40) << it->second << right <<  "│" << std::endl;
-            outputFile << "│" << std::setw(7) << city << " : " <<left << setw(40) << it->second << right << "│" << std::endl;
-        } else {
-            std::cerr << "Error: No data found for SuperSource in max_water_map!" << std::endl;
-            return 1;
-        }
-        outputFile.close();
-    } else {
-        std::cerr << "Error: Unable to open output file!" << std::endl;
-        return 1;
-    }
-    return 0;
-}
-
-
 int Menu::extractNumberFromCode(const std::string& code) {
     return std::stoi(code.substr(2));
 }
-
-int Menu::displayAllCitiesMaxWater() {
-    const std::unordered_set<DeliverySites>& cities = data_.getDeliverySites();
-
-    std::vector<DeliverySites> sortedCities;
-    for (const auto& city : cities) {
-        if (city.getCityName() == "SuperSource" || city.getCityName() == "SuperSink") {
-            continue;
-        }
-        sortedCities.push_back(city);
-    }
-
-    std::sort(sortedCities.begin(), sortedCities.end(), [this](const DeliverySites& a, const DeliverySites& b) {
-        return extractNumberFromCode(a.getCode()) < extractNumberFromCode(b.getCode());
+int Menu::displayMaxWater(vector<string> cities){
+    data_.edmondsKarp("SuperSource", "SuperSink");
+    std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
+    auto network= data_.getNetwork();
+    cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
+    double maxflow=0;
+    cout<<"┌──────────────────────────────────────────────────┐"<<endl;
+    std::sort(cities.begin(), cities.end(), [this](const std::string& a, const std::string& b) {
+        return extractNumberFromCode(a) < extractNumberFromCode(b);
     });
-    cout << "┌─ Maximum Amount of Water ────────────────────────┐" << endl;
-    cout << "│" << setw(53) << "│" << endl;
-    for (const auto& city : sortedCities) {
-        if (displayMaxWater(city.getCode()) != 0) {
-            return 1;
+    if (outputFile.is_open()) {
+        for (auto adj: cities) {
+            auto vertex = network.findVertex(adj);
+            if (vertex == NULL) {
+                cout << "Wrong City Code"<< endl;
+                return 1;
+            }
+
+            float sum = 0;
+            for (auto edge: vertex->getAdj()) {
+                sum += edge->getFlow();
+            }
+            maxflow+=sum;
+            std::cout << "│" << std::setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << std::endl;
+            outputFile << "│" << std::setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << std::endl;
         }
+        if(cities.size()+1==data_.getDeliverySites().size()) {
+            cout << "│                                                  │" << endl;
+            std::cout << "│" << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
+                      << std::endl;
+            outputFile << "│" << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
+                       << std::endl;
+        }
+        outputFile.close();
+    }else {
+        std::cerr << "Error: Unable to open output file!" << std::endl;
+        return 1;
     }
-    cout << "│" << setw(53) << "│" << endl;
     drawBottom();
     return 0;
+
+//    const std::unordered_map<std::string, double>& max_water_map = data_.maxWaterCity(city);
+//    std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
+//
+//    if (outputFile.is_open()) {
+//        auto it = max_water_map.find("SuperSource");
+//        if (it != max_water_map.end()) {
+//            std::cout << "│" <<  std::setw(7) << city << " : " << left << setw(40) << it->second << right <<  "│" << std::endl;
+//            outputFile << "│" << std::setw(7) << city << " : " <<left << setw(40) << it->second << right << "│" << std::endl;
+//        } else {
+//            std::cerr << "Error: No data found for SuperSource in max_water_map!" << std::endl;
+//            return 1;
+//        }
+//        outputFile.close();
+//    } else {
+//        std::cerr << "Error: Unable to open output file!" << std::endl;
+//        return 1;
+//    }
+//    return 0;
 }
+
+
+
+
+//int Menu::displayAllCitiesMaxWater() {
+//    const std::unordered_set<DeliverySites>& cities = data_.getDeliverySites();
+//
+//    std::vector<DeliverySites> sortedCities;
+//    for (const auto& city : cities) {
+//        if (city.getCityName() == "SuperSource" || city.getCityName() == "SuperSink") {
+//            continue;
+//        }
+//        sortedCities.push_back(city);
+//    }
+//
+//    std::sort(sortedCities.begin(), sortedCities.end(), [this](const DeliverySites& a, const DeliverySites& b) {
+//        return extractNumberFromCode(a.getCode()) < extractNumberFromCode(b.getCode());
+//    });
+//    cout << "┌─ Maximum Amount of Water ────────────────────────┐" << endl;
+//    cout << "│" << setw(53) << "│" << endl;
+//    for (const auto& city : sortedCities) {
+//        if (displayMaxWater(city.getCode()) != 0) {
+//            return 1;
+//        }
+//    }
+//    cout << "│" << setw(53) << "│" << endl;
+//    drawBottom();
+//    return 0;
+//}
 
 
 void Menu::displayWaterNeeds(){

@@ -43,6 +43,10 @@ class Data {
         double computePipeDifVar();
         double computePipeMaxDif();
 
+        void balanceLoadAcrossNetwork();
+
+        void checkBalance();
+
     private:
         Graph network_;
         Graph original_graph_;

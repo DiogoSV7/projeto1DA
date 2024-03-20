@@ -198,34 +198,32 @@ Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_poi
 }
 
 
+//std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
 
-std::unordered_map<std::string, double> Data::maxWaterCity(const std::string& delivery_site_code) {
-    Vertex* target_vertex = nullptr;
-    for (auto vertex : network_.getVertexSet()) {
-        if (vertex->getType() == 2 && vertex->getInfo() == delivery_site_code) {
-            target_vertex = vertex;
-            break;
-        }
-    }
-
-    if (target_vertex == nullptr) {
-        throw std::logic_error("Delivery site with the specified code not found");
-    }
-    edmondsKarp("SuperSource", target_vertex->getInfo());
-
-    std::unordered_map<std::string, double> max_water_map;
-    for (auto vertex : network_.getVertexSet()) {
-        if (vertex->getType() == 0) {
-            double max_flow = 0;
-            for (auto e : vertex->getAdj()) {
-                max_flow += e->getFlow();
-            }
-            max_water_map[vertex->getInfo()] = max_flow;
-        }
-    }
-
-    return max_water_map;
-}
+    //    Vertex* target_vertex = nullptr;
+//    for (auto vertex : network_.getVertexSet()) {
+//        if (vertex->getType() == 2 && vertex->getInfo() == delivery_site_code) {
+//            target_vertex = vertex;
+//            break;
+//        }
+//    }
+//    if (target_vertex == nullptr) {
+//        throw std::logic_error("Delivery site with the specified code not found");
+//    }
+//
+//    std::unordered_map<std::string, double> max_water_map;
+//    for (auto vertex : network_.getVertexSet()) {
+//        if (vertex->getType() == 0) {
+//            double max_flow = 0;
+//            for (auto e : vertex->getAdj()) {
+//                max_flow += e->getFlow();
+//            }
+//            max_water_map[vertex->getInfo()] = max_flow;
+//        }
+//    }
+//
+//    return max_water_map;
+//}
 
 std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
     // Aqui vamos utilizar um vector, invés de um map, pq uma vez que não existe benefício em utilizar map pq vamos ter de percorrer o vetor inteiro na mesma
@@ -431,6 +429,54 @@ double Data::computePipeMaxDif() {
     }
     return max;
 }
+
+void Data::balanceLoadAcrossNetwork() {
+    // Initialize convergence criteria
+    bool converged = false;
+
+    // Repeat until convergence or maximum iterations
+    int max_iterations = 1000; // Adjust as needed
+    int iteration = 0;
+    while (!converged && iteration < max_iterations) {
+        converged = true; // Assume convergence
+
+        // Iterate through each pipe
+        for (auto v : network_.getVertexSet()) {
+            for (auto edge : v->getAdj()) {
+                // Check if flow exceeds capacity
+                int diff = edge->getFlow() - edge->getWeight();
+                if (diff > 0) {
+                    // Identify neighboring pipe
+                    Vertex* neighbor = edge->getDest();
+
+                    // Distribute excess flow to neighbor with lower difference
+                    for (auto e : neighbor->getAdj()) {
+                        int neighbor_diff = e->getFlow() - e->getWeight();
+                        if (neighbor_diff < 0) { // Neighbor can accept more flow
+                            int transfer = std::min(diff, -neighbor_diff); // Transfer up to excess flow or capacity difference
+                            edge->setFlow(edge->getFlow() - transfer); // Reduce flow from current pipe
+                            e->setFlow(e->getFlow() + transfer); // Increase flow to neighbor
+                            converged = false; // Update convergence flag
+                        }
+                    }
+                }
+            }
+        }
+
+        iteration++; // Increment iteration counter
+    }
+}
+
+
+void Data::checkBalance() {
+    edmondsKarp("SuperSource","SuperSink");
+    std::cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << std::endl;
+
+    balanceLoadAcrossNetwork();
+
+    std::cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << std::endl;
+}
+
 /*std::unordered_set<std::string> Data::evaluateReservoirImpact(const std::string& reservoirCode) {
     // Step 1: Find the water reservoir to be removed
     WaterReservoir reservoir;
