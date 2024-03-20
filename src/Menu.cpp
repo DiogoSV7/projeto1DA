@@ -1,7 +1,5 @@
 #include "../includes/Menu.h"
-#include "../includes/Data.h"
 #include <iostream>
-#include <sstream>
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
@@ -67,8 +65,7 @@ void Menu::showMenu() {
         cout << "│     [1] Display                                  │" << endl;
         cout << "│     [2] Cities in Lack of Water                  │" << endl;
         cout << "│     [3] Maximum Flow to Cities                   │" << endl;
-        cout << "│     [4]                                          │" << endl;
-        cout << "│     [5] Remove / Restore                         │" << endl;
+        cout << "│     [4] Remove / Restore                         │" << endl;
         cout << "│     [Q] Exit                                     │" << endl;
         cout << "│" << setw(53) << "│" << endl;
         drawBottom();
@@ -85,10 +82,12 @@ void Menu::showMenu() {
             }
             case '3': {
                 char key1;
-                drawTop();
+                cout << "┌── Maximum Flow to Cities─────────────────────────┐" << endl;
+                cout << "│" << setw(53) << "│" << endl;
                 cout << "│    Options:                                      │" << endl;
                 cout << "│     [1] Choose All Cities                        │" << endl;
                 cout << "│     [2] Choose Specific City (C_1 to C_9)        │" << endl;
+                cout << "│" << setw(53) << "│" << endl;
                 drawBottom();
                 cout << "Choose an option: ";
                 cin >> key1;
@@ -127,7 +126,7 @@ void Menu::showMenu() {
                 };
                 break;
             }
-            case '5': {
+            case '4': {
                 char key2;
                 cout << "┌── Remove / Restore Menu ─────────────────────────┐" << endl;
                 cout << "│" << setw(53) << "│" << endl;
@@ -215,7 +214,9 @@ int Menu::displayMaxWater(vector<string> cities){
     auto network= data_.getNetwork();
     cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
     double maxflow=0;
-    cout<<"┌──────────────────────────────────────────────────┐"<<endl;
+    cout<<"┌── Max Water Flow ────────────────────────────────┐"<<endl;
+    cout << "│" << setw(53) << "│" << endl;
+
     std::sort(cities.begin(), cities.end(), [this](const std::string& a, const std::string& b) {
         return extractNumberFromCode(a) < extractNumberFromCode(b);
     });
@@ -247,6 +248,7 @@ int Menu::displayMaxWater(vector<string> cities){
         std::cerr << "Error: Unable to open output file!" << std::endl;
         return 1;
     }
+    cout << "│" << setw(53) << "│" << endl;
     drawBottom();
     return 0;
 
