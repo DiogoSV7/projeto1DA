@@ -10,12 +10,13 @@ using namespace std;
 /**
  * @brief Default constructor for the Menu class.
  *
- * @detail This constructor initializes an instance of the Menu class.
+ * @detail This constructor initializes an instance of the Menu class, and runs edmondsKarp function to populate the flow of the graph.
  *
- * Time Complexity: O(1)
+ * @complexity Time Complexity:: O(V E^2) where V are all the vertices of the graph and E all the pipes in the graph.
  */
 Menu::Menu() {
     data_ = Data();
+    data_.edmondsKarp("SuperSource", "SuperSink");
 }
 
 /**
@@ -23,7 +24,7 @@ Menu::Menu() {
  *
  * @detail This function is responsible for rendering the top section of the menu interface.
  *
- * Time Complexity: O(1)
+ * @complexity Time Complexity:: O(1)
  */
 void Menu::drawTop(){
     cout << "┌──────────────────────────────────────────────────┐" << endl;
@@ -41,7 +42,7 @@ void Menu::drawTop(){
  *
  * @detail This function is responsible for rendering the bottom section of the menu interface.
  *
- * Time Complexity: O(1)
+ * @complexity Time Complexity: O(1)
  */
 void Menu::drawBottom(){
     cout << "└──────────────────────────────────────────────────┘" << endl;
@@ -53,7 +54,7 @@ void Menu::drawBottom(){
  * @info This method initializes a FlightManagementSystem and Data objects, then displays a menu with different options.
  * The user can choose options related to airports, statistics, or finding the best flight options.
  *
- * @complexity Time complexity: depends on the option chosen by the user.
+ * @complexity Time Complexity: depends on the option chosen by the user.
  */
 void Menu::showMenu() {
     char key;
@@ -205,11 +206,28 @@ void Menu::showMenu() {
         }
     }
 }
+
+/**
+ * @brief Extracts the numerical part from a city code.
+ *
+ * @param code The city code from which to extract the numerical part.
+ * @return The numerical part of the city code.
+ *
+ * Time Complexity: O(1)
+ */
 int Menu::extractNumberFromCode(const std::string& code) {
     return std::stoi(code.substr(2));
 }
+
+/**
+ * @brief Displays the maximum water flow to specified cities.
+ *
+ * @param cities A vector containing the codes of the cities to display the maximum water flow for.
+ * @return 0 if the operation succeeds, 1 otherwise.
+ *
+ * @complexity Time Complexity:: O(d * p), where d is the number of cities and p is the maximum number of adjacent edges for a city.
+ */
 int Menu::displayMaxWater(vector<string> cities){
-    data_.edmondsKarp("SuperSource", "SuperSink");
     std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
     auto network= data_.getNetwork();
     cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
@@ -251,57 +269,14 @@ int Menu::displayMaxWater(vector<string> cities){
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
     return 0;
-
-//    const std::unordered_map<std::string, double>& max_water_map = data_.maxWaterCity(city);
-//    std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
-//
-//    if (outputFile.is_open()) {
-//        auto it = max_water_map.find("SuperSource");
-//        if (it != max_water_map.end()) {
-//            std::cout << "│" <<  std::setw(7) << city << " : " << left << setw(40) << it->second << right <<  "│" << std::endl;
-//            outputFile << "│" << std::setw(7) << city << " : " <<left << setw(40) << it->second << right << "│" << std::endl;
-//        } else {
-//            std::cerr << "Error: No data found for SuperSource in max_water_map!" << std::endl;
-//            return 1;
-//        }
-//        outputFile.close();
-//    } else {
-//        std::cerr << "Error: Unable to open output file!" << std::endl;
-//        return 1;
-//    }
-//    return 0;
 }
 
 
-
-
-//int Menu::displayAllCitiesMaxWater() {
-//    const std::unordered_set<DeliverySites>& cities = data_.getDeliverySites();
-//
-//    std::vector<DeliverySites> sortedCities;
-//    for (const auto& city : cities) {
-//        if (city.getCityName() == "SuperSource" || city.getCityName() == "SuperSink") {
-//            continue;
-//        }
-//        sortedCities.push_back(city);
-//    }
-//
-//    std::sort(sortedCities.begin(), sortedCities.end(), [this](const DeliverySites& a, const DeliverySites& b) {
-//        return extractNumberFromCode(a.getCode()) < extractNumberFromCode(b.getCode());
-//    });
-//    cout << "┌─ Maximum Amount of Water ────────────────────────┐" << endl;
-//    cout << "│" << setw(53) << "│" << endl;
-//    for (const auto& city : sortedCities) {
-//        if (displayMaxWater(city.getCode()) != 0) {
-//            return 1;
-//        }
-//    }
-//    cout << "│" << setw(53) << "│" << endl;
-//    drawBottom();
-//    return 0;
-//}
-
-
+/**
+ * @brief Displays delivery sites with water deficits.
+ *
+ * @complexity Time Complexity: O(n), where n is the number of delivery sites.
+ */
 void Menu::displayWaterNeeds(){
     const vector<pair<string, double>>& water_needs_vector = data_.checkWaterNeeds();
     if (water_needs_vector.empty()) {
@@ -317,7 +292,11 @@ void Menu::displayWaterNeeds(){
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
 }
-
+/**
+ * @brief Displays the menu for displaying various options.
+ *
+ * @complexity Time Complexity: depends on the option chosen by the user.
+ */
 void Menu::displayDisplayMenu() const {
     char key;
     bool flag = true;
@@ -363,7 +342,11 @@ void Menu::displayDisplayMenu() const {
     }
 }
 
-
+/**
+ * @brief Displays all water reservoirs.
+ *
+ * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph..
+ */
 void Menu::displayAllWaterReservoirs() const{
     std::unordered_set<WaterReservoir> reservoirs;
     for (auto water_res : data_.getNetwork().getVertexSet()) {
@@ -383,6 +366,11 @@ void Menu::displayAllWaterReservoirs() const{
     drawBottom();
 }
 
+/**
+ * @brief Displays all pumping stations.
+ *
+ * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph.
+ */
 void Menu::displayAllPumpingStations() const{
     std::unordered_set<PumpingStations> pumping_stations;
     for(auto pump_sta : data_.getNetwork().getVertexSet()){
@@ -399,6 +387,11 @@ void Menu::displayAllPumpingStations() const{
     drawBottom();
 }
 
+/**
+ * @brief Displays all delivery sites.
+ *
+ * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph.
+ */
 void Menu::displayAllDeliverySites() const{
     std::unordered_set<DeliverySites> delivery_sites;
     for(auto del_sites : data_.getNetwork().getVertexSet()){
