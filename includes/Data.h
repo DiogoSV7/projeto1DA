@@ -17,6 +17,12 @@ class Data {
         void readPipes();
         void readPumpingStations();
         void readWaterReservoir();
+
+        void readWaterReservoirLarge();
+        void readDeliverySitesLarge();
+        void readPumpingStationsLarge();
+        void readPipesLarge();
+
         WaterReservoir findWaterReservoir(const std::string code) const;
         PumpingStations findPumpingStation(const std::string code) const;
         DeliverySites findDeliverySite(const std::string code) const;

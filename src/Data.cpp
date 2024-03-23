@@ -13,11 +13,20 @@ Data::Data() {
 
     readPumpingStations();
 
+    //readPumpingStationsLarge();
+
     readDeliverySites();
+
+    //readDeliverySitesLarge();
 
     readWaterReservoir();
 
+    //readWaterReservoirLarge();
+
     readPipes();
+
+    //readPipesLarge();
+
 
     addSuperSourceAndSink("SuperSource", "SuperSink");
 }
@@ -56,6 +65,40 @@ void Data::readWaterReservoir() {
     }
 }
 
+void Data::readWaterReservoirLarge() {
+    static const string WATER_RESERVOIRS_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Reservoir.csv";
+
+    ifstream waterReservoirsFile(WATER_RESERVOIRS_FILEPATH);
+    if (waterReservoirsFile.fail()) {
+        ostringstream error_message;
+        error_message << "Could not open file \"" << WATER_RESERVOIRS_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string header;
+    getline(waterReservoirsFile, header);
+
+    string water_reservoir_name, municipality, id_string, code_string, max_delivery_string, coma;
+    while (getline(waterReservoirsFile, water_reservoir_name, ',')) {
+        getline(waterReservoirsFile, municipality, ',');
+        getline(waterReservoirsFile, id_string, ',');
+        getline(waterReservoirsFile, code_string, ',');
+        getline(waterReservoirsFile, max_delivery_string, '\r');
+        getline(waterReservoirsFile, coma);
+
+        // Convert string to integers
+        int id = stoi(id_string);
+        int max_delivery = stoi(max_delivery_string);
+
+        // Create WaterReservoir object and insert into water_reservoirs_
+        WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
+        water_reservoirs_.insert(water_res);
+
+        // Add vertex to the network with the code as identifier and 0 as initial flow
+        network_.addVertex(code_string, 0);
+    }
+}
+
 /**
  * @brief Reads pumping station data from a CSV file.
  *
@@ -80,6 +123,33 @@ void Data::readPumpingStations() {
         }
         getline(pumpingStationsFile, code, ',');
         getline(pumpingStationsFile, coma);
+        int id = stoi(id_string);
+        PumpingStations pump_sta(id, code);
+        pumping_stations_.insert(pump_sta);
+        network_.addVertex(code, 1);
+    }
+}
+
+void Data::readPumpingStationsLarge() {
+    static const string PUMPING_STATIONS_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Stations.csv";
+
+    ifstream pumpingStationsFile(PUMPING_STATIONS_FILEPATH);
+    if(pumpingStationsFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << PUMPING_STATIONS_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+    string header;
+    getline(pumpingStationsFile,header);
+
+    string id_string, code, coma;
+    while (getline(pumpingStationsFile, id_string, ',')) {
+        if(id_string.empty()){
+            break;
+        }
+        getline(pumpingStationsFile, code, '\n');
+        code.erase(remove(code.begin(), code.end(), '\r'), code.end());
+
         int id = stoi(id_string);
         PumpingStations pump_sta(id, code);
         pumping_stations_.insert(pump_sta);
@@ -126,6 +196,40 @@ void Data::readDeliverySites() {
     }
 }
 
+void Data::readDeliverySitesLarge() {
+    static const string DELIVERY_SITES_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Cities.csv";
+
+    ifstream deliverySitesFile(DELIVERY_SITES_FILEPATH);
+    if(deliverySitesFile.fail()){
+        ostringstream error_message;
+        error_message << "Could not open file \"" << DELIVERY_SITES_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string header;
+    getline(deliverySitesFile, header);
+
+    string line;
+    while(getline(deliverySitesFile, line)) {
+        stringstream ss(line);
+        string city, id_string, code, demand_string, population_string;
+
+        getline(ss, city, ',');
+        getline(ss, id_string, ',');
+        getline(ss, code, ',');
+        getline(ss, demand_string, ',');
+        getline(ss, population_string, ',');
+
+        population_string.erase(remove(population_string.begin(), population_string.end(), '"'), population_string.end());
+        int id = stoi(id_string);
+        double demand = stod(demand_string);
+        population_string.erase(remove(population_string.begin(), population_string.end(), '\r'), population_string.end());
+        DeliverySites del_site(city, id, code, demand, population_string);
+        delivery_sites_.insert(del_site);
+        network_.addVertex(code, 2);
+    }
+}
+
 /**
  * @brief Reads pipe data from a CSV file.
  *
@@ -133,6 +237,42 @@ void Data::readDeliverySites() {
  */
 void Data::readPipes() {
     static const string PIPES_FILEPATH = "../dataset/Pipes_Madeira.csv";
+
+    ifstream pipesFile(PIPES_FILEPATH);
+    if (pipesFile.fail()) {
+        ostringstream error_message;
+        error_message << "Could not open file \"" << PIPES_FILEPATH << '"';
+        throw ios_base::failure(error_message.str());
+    }
+
+    string header;
+    getline(pipesFile,header);
+
+    string serv_site_a, serv_site_b, capacity_string, direction_string;
+    while (getline(pipesFile, serv_site_a, ',')) {
+        getline(pipesFile, serv_site_b, ',');
+        getline(pipesFile, capacity_string, ',');
+        getline(pipesFile, direction_string);
+        int capacity = stoi(capacity_string);
+        int direction = stoi(direction_string);
+        Vertex* source = network_.findVertex(serv_site_a);
+        Vertex* sink = network_.findVertex(serv_site_b);
+        if (source != nullptr && sink != nullptr) {
+            if (direction == 0) {
+                Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
+                pipes_.insert(pipe);
+                network_.addBidirectionalEdge(source->getInfo(), sink->getInfo(), capacity);
+            } else {
+                network_.addEdge(source->getInfo(), sink->getInfo(), capacity);
+                Pipes pipe(serv_site_a, serv_site_b, capacity, direction);
+                pipes_.insert(pipe);
+            }
+        }
+    }
+}
+
+void Data::readPipesLarge() {
+    static const string PIPES_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Pipes.csv";
 
     ifstream pipesFile(PIPES_FILEPATH);
     if (pipesFile.fail()) {
@@ -569,54 +709,51 @@ double Data::computePipeMaxDif() {
     return max;
 }
 
+bool compareSecond(const pair<Edge*, double>& a, const pair<Edge*, double>& b) {
+    return a.second < b.second;
+}
 
 /**
- * @brief Balances the load across the network by redistributing excess flow.
+ * @brief Balances the load across the network by redistributing excess flow. Not Working
  *
- * @complexity Time Complexity: O(V * E), where V is the number of vertices and E is the number of edges.
+ * @complexity Time Complexity: O()
  */
 void Data::balanceLoadAcrossNetwork() {
-    // Initialize convergence criteria
-    bool converged = false;
+    vector<pair<Vertex*,double>> v;
+    for(DeliverySites city: delivery_sites_){
+        v.push_back({network_.findVertex(city.getCode()), city.getDemand()});
+    }
+    for(auto p:v) {
+        double flowDelivered=0;
+        vector<pair<Edge*,double>> pri;
+        for(Edge* e:p.first->getIncoming()) {
+            flowDelivered+=e->getFlow();
+            pri.push_back({e,e->getWeight()-e->getFlow()});
+        }
+        std::sort(pri.begin(), pri.end(), compareSecond);
 
-    // Repeat until convergence or maximum iterations
-    int max_iterations = 1000; // Adjust as needed
-    int iteration = 0;
-    while (!converged && iteration < max_iterations) {
-        converged = true; // Assume convergence
-
-        // Iterate through each pipe
-        for (auto v : network_.getVertexSet()) {
-            for (auto edge : v->getAdj()) {
-                // Check if flow exceeds capacity
-                int diff = edge->getFlow() - edge->getWeight();
-                if (diff > 0) {
-                    // Identify neighboring pipe
-                    Vertex* neighbor = edge->getDest();
-
-                    // Distribute excess flow to neighbor with lower difference
-                    for (auto e : neighbor->getAdj()) {
-                        int neighbor_diff = e->getFlow() - e->getWeight();
-                        if (neighbor_diff < 0) { // Neighbor can accept more flow
-                            int transfer = std::min(diff, -neighbor_diff); // Transfer up to excess flow or capacity difference
-                            edge->setFlow(edge->getFlow() - transfer); // Reduce flow from current pipe
-                            e->setFlow(e->getFlow() + transfer); // Increase flow to neighbor
-                            converged = false; // Update convergence flag
-                        }
-                    }
+        if(flowDelivered>p.second) {
+            for(auto p:pri) {
+                if(flowDelivered>p.first->getWeight()) {
+                    p.first->setFlow(p.first->getWeight());
+                    flowDelivered-=p.first->getWeight();
                 }
+                else if (flowDelivered>0 && flowDelivered<p.first->getWeight()) {
+                    p.first->setFlow(flowDelivered);
+                    flowDelivered=0;
+                }
+
             }
         }
-
-        iteration++; // Increment iteration counter
     }
 }
 
 
+
 /**
- * @brief Checks the balance of the network and prints relevant statistics.
+ * @brief Checks the balance of the network and prints relevant statistics. Depends on a method that is not working
  *
- * @complexity Time Complexity: O(V * E^2), where V is the number of vertices and E is the number of edges.
+ * @complexity Time Complexity: O()
  */
 void Data::checkBalance() {
     edmondsKarp("SuperSource","SuperSink");
