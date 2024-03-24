@@ -4,30 +4,24 @@
 #include <cmath>
 using namespace std;
 
+
 /**
  * @brief Constructor for the Data class.
  *
  * @complexity Time Complexity: O(N), where N is the total number of records in all dataset files.
  */
-Data::Data() {
-
-    readPumpingStations();
-
-    //readPumpingStationsLarge();
-
-    readDeliverySites();
-
-    //readDeliverySitesLarge();
-
-    readWaterReservoir();
-
-    //readWaterReservoirLarge();
-
-    readPipes();
-
-    //readPipesLarge();
-
-
+Data::Data(bool largeDataset){
+    if (largeDataset) {
+        readPumpingStationsLarge();
+        readDeliverySitesLarge();
+        readWaterReservoirLarge();
+        readPipesLarge();
+    } else {
+        readPumpingStations();
+        readDeliverySites();
+        readWaterReservoir();
+        readPipes();
+    }
     addSuperSourceAndSink("SuperSource", "SuperSink");
 }
 
@@ -86,15 +80,10 @@ void Data::readWaterReservoirLarge() {
         getline(waterReservoirsFile, max_delivery_string, '\r');
         getline(waterReservoirsFile, coma);
 
-        // Convert string to integers
         int id = stoi(id_string);
         int max_delivery = stoi(max_delivery_string);
-
-        // Create WaterReservoir object and insert into water_reservoirs_
         WaterReservoir water_res(water_reservoir_name, municipality, id, code_string, max_delivery);
         water_reservoirs_.insert(water_res);
-
-        // Add vertex to the network with the code as identifier and 0 as initial flow
         network_.addVertex(code_string, 0);
     }
 }

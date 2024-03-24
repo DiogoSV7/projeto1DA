@@ -7,6 +7,7 @@
 class Menu {
 public:
     Menu();
+    Menu(bool useLargeDataset);
     void showMenu();
     void displayDisplayMenu() const;
     static void drawTop();

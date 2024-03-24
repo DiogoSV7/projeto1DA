@@ -5,17 +5,15 @@
 #include <algorithm>
 
 using namespace std;
-
-
 /**
- * @brief Default constructor for the Menu class.
+ * @brief Constructor for the Menu class.
  *
- * @detail This constructor initializes an instance of the Menu class, and runs edmondsKarp function to populate the flow of the graph.
+ * @detail This constructor initializes an instance of the Menu class, and runs edmondsKarp function to populate the flow of the graph with the large dataset.
  *
  * @complexity Time Complexity:: O(V E^2) where V are all the vertices of the graph and E all the pipes in the graph.
  */
-Menu::Menu() {
-    data_ = Data();
+Menu::Menu(bool useLargeDataset) {
+    data_ = Data(useLargeDataset);
     data_.edmondsKarp("SuperSource", "SuperSink");
 }
 
@@ -67,6 +65,7 @@ void Menu::showMenu() {
         cout << "│     [2] Cities in Lack of Water                  │" << endl;
         cout << "│     [3] Maximum Flow to Cities                   │" << endl;
         cout << "│     [4] Remove / Restore                         │" << endl;
+        cout << "│     [5] Display Pipes Statistics                 │" << endl;
         cout << "│     [Q] Exit                                     │" << endl;
         cout << "│" << setw(53) << "│" << endl;
         drawBottom();
@@ -182,6 +181,19 @@ void Menu::showMenu() {
                 };
                 break;
             }
+            case '5' : {
+                double avgDiff = data_.computeAvgPipeDif();
+                double varDiff = data_.computePipeDifVar();
+                double maxDiff = data_.computePipeMaxDif();
+                cout << "┌─ Pipes Statistics ───────────────────────────────┐" << endl;
+                cout << "│" << setw(53) << "│" << endl;
+                cout << "│ Average Difference: " << left << setw(29) << fixed << setprecision(2) << avgDiff << right << "│"  << endl;
+                cout << "│ Variance of Differences: " << left << setw(29) << scientific << setprecision(2) << varDiff << right << "│" << endl;
+                cout << "│ Maximum Difference: " << left << setw(29) << fixed << setprecision(2) << maxDiff << right << "│" << endl;
+                cout << "│" << setw(53) << "│" << endl;
+                drawBottom();
+            }
+
             case 'Q' : {
                 flag = false;
                 break;
@@ -230,6 +242,7 @@ int Menu::extractNumberFromCode(const std::string& code) {
 int Menu::displayMaxWater(vector<string> cities){
     std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
     auto network= data_.getNetwork();
+    data_.edmondsKarp("SuperSource", "SuperSink");
     cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
     double maxflow=0;
     cout<<"┌── Max Water Flow ────────────────────────────────┐"<<endl;
