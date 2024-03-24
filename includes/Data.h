@@ -12,17 +12,16 @@
 
 class Data {
     public:
-        Data();
+        Data() = default;
+        Data(bool largeDataset);
         void readDeliverySites();
         void readPipes();
         void readPumpingStations();
         void readWaterReservoir();
-
         void readWaterReservoirLarge();
         void readDeliverySitesLarge();
         void readPumpingStationsLarge();
         void readPipesLarge();
-
         WaterReservoir findWaterReservoir(const std::string code) const;
         PumpingStations findPumpingStation(const std::string code) const;
         DeliverySites findDeliverySite(const std::string code) const;
@@ -44,15 +43,11 @@ class Data {
         void removePumpingStations(const std::string& pumping_station_code);
         void removePipe(const std::string& serv_site_a, const std::string& serv_site_b);
         void restoreGraph();
-
         double computeAvgPipeDif();
         double computePipeDifVar();
         double computePipeMaxDif();
-
         void balanceLoadAcrossNetwork();
-
         void checkBalance();
-
     private:
         Graph network_;
         Graph original_graph_;
