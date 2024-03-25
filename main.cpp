@@ -1,9 +1,11 @@
 #include "includes/Menu.h"
 #include <iostream>
+#include <clocale>
 #include <iomanip>
 using namespace std;
 
 int main() {
+    setlocale(LC_ALL,"Portuguese");
     char dataset_choice;
     cout << "┌─── Welcome to DAms ──────────────────────────────┐" << endl;
     cout << "│" << setw(53) << "│" << endl;

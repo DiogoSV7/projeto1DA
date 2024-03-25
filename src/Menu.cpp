@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iomanip>
 #include <algorithm>
-
+#include <locale>
 using namespace std;
 /**
  * @brief Constructor for the Menu class.
@@ -188,10 +188,11 @@ void Menu::showMenu() {
                 cout << "┌─ Pipes Statistics ───────────────────────────────┐" << endl;
                 cout << "│" << setw(53) << "│" << endl;
                 cout << "│ Average Difference: " << left << setw(29) << fixed << setprecision(2) << avgDiff << right << "│"  << endl;
-                cout << "│ Variance of Differences: " << left << setw(29) << scientific << setprecision(2) << varDiff << right << "│" << endl;
+                cout << "│ Variance of Differences: " << left << setw(24) << scientific << setprecision(2) << varDiff << right << "│" << endl;
                 cout << "│ Maximum Difference: " << left << setw(29) << fixed << setprecision(2) << maxDiff << right << "│" << endl;
                 cout << "│" << setw(53) << "│" << endl;
                 drawBottom();
+                break;
             }
 
             case 'Q' : {
@@ -312,8 +313,7 @@ void Menu::displayWaterNeeds(){
  */
 void Menu::displayDisplayMenu() const {
     char key;
-    bool flag = true;
-    while (flag) {
+
         cout << "┌── Display Menu ──────────────────────────────────┐" << endl;
         cout << "│" << setw(53) << "│" << endl;
         cout << "│    Options:                                      │" << endl;
@@ -340,40 +340,62 @@ void Menu::displayDisplayMenu() const {
                 break;
             }
             case 'Q': {
-                flag = false;
+
                 break;
             }
             default: {
                 cout << endl << "Invalid option!" << endl;
             }
         };
-        cout << endl;
-        cout << "Press any key: \n";
-        char newCicle;
-        cin >> newCicle;
-        break;
-    }
+
+
 }
 
+/**
+ * @brief Counts the number of accented characters in a given string.
+ *
+ * @note This function counts the number of accented characters (including those with diacritics) in the input string. It considers accented characters commonly used in the Portuguese language.
+ *
+ * @param str The input string to count accented characters from.
+ * @return The count of accented characters in the string.
+ *
+ * @complexity Time Complexity: O(n), where n is the length of the input string.
+ */
+int Menu::countAccentedCharacters(const std::string& str) {
+    std::string accentedCharacters = "áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãõÃÕçÇ";
+    float count = 0;
+    for (char c : str) {
+        if (accentedCharacters.find(c) != std::string::npos) {
+            count+=0.5;
+        }
+    }
+    return int(count);
+}
 /**
  * @brief Displays all water reservoirs.
  *
  * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph..
  */
 void Menu::displayAllWaterReservoirs() const{
+
     std::unordered_set<WaterReservoir> reservoirs;
     for (auto water_res : data_.getNetwork().getVertexSet()) {
         if (water_res->getType() == 0) {
             reservoirs.insert(data_.findWaterReservoir(water_res->getInfo()));
         }
     }
+
     cout << "┌─ Water Reservoirs ───────────────────────────────┐" << endl;
     cout << "│" << setw(53) << "│" << endl;
+
     for(auto water_res: reservoirs){
         if(water_res.getCode()=="SuperSource"){
             continue;
         }
-        cout << "│ " << left << setw(6) << "Name: " << right << left << setw(29) << water_res.getWaterReservoirName() << right << setw(6) << "Code: " << right << left << setw(8) << water_res.getCode() << right << "│" << endl;
+        int n = countAccentedCharacters(water_res.getWaterReservoirName());
+        cout << "│ " << left << setw(6) << "Name: " << right << left << setw(29+n) << water_res.getWaterReservoirName() << right << setw(6) << "Code: " << right << left << setw(8) << water_res.getCode() << right << "│" << endl;
+
+
     }
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
@@ -414,11 +436,13 @@ void Menu::displayAllDeliverySites() const{
     }
     cout << "┌─ Delivery Sites ─────────────────────────────────┐" << endl;
     cout << "│" << setw(53) << "│" << endl;
-    for(auto del_site : delivery_sites){
-        if(del_site.getCode()=="SuperSink"){
+    for(auto del_site : delivery_sites) {
+        if (del_site.getCode() == "SuperSink") {
             continue;
         }
-        cout << "│ " << left << setw(6) << "Name: " << right << left << setw(29) << del_site.getCityName() << right << setw(6) << "Code: " << right << left << setw(8) << del_site.getCode() << right << "│" << endl;
+        int n = countAccentedCharacters(del_site.getCityName());
+        cout << "│ " << left << setw(6) << "Name: " << right << left << setw(29+n) << del_site.getCityName() << right<< setw(6) << "Code: " << right << left << setw(8) << del_site.getCode() << right << "│" << endl;
+
     }
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();

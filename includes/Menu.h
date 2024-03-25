@@ -13,7 +13,7 @@ public:
     static void drawTop();
     static void drawBottom();
     void displayWaterNeeds();
-    int displayAllCitiesMaxWater();
+    static int countAccentedCharacters(const std::string& str);
     int displayMaxWater(std::vector<std::string> cities);
     int extractNumberFromCode(const std::string& code);
     void displayAllWaterReservoirs() const;

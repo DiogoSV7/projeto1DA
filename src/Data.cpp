@@ -440,16 +440,14 @@ void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::
     Vertex* superSource = network_.findVertex(superSourceName);
     Vertex* superSink = network_.findVertex(superSinkName);
 
-    for (auto vertex : network_.getVertexSet()) {
-        if (vertex->getType() == 0) {
-            network_.addEdge(superSource->getInfo(), vertex->getInfo(), std::numeric_limits<double>::infinity());
-        }
+    for (const WaterReservoir& vertex : water_reservoirs_) {
+        network_.addEdge(superSource->getInfo(), vertex.getCode(), vertex.getMaxDelivery());
+
     }
 
-    for (auto vertex : network_.getVertexSet()) {
-        if (vertex->getType() == 2) {
-            network_.addEdge(vertex->getInfo(), superSink->getInfo(), std::numeric_limits<double>::infinity());
-        }
+    for (const DeliverySites& vertex : delivery_sites_) {
+        network_.addEdge(vertex.getCode(), superSink->getInfo(), vertex.getDemand());
+
     }
 }
 
