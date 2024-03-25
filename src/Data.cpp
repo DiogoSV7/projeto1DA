@@ -686,12 +686,17 @@ double Data::computePipeDifVar() {
 double Data::computePipeMaxDif() {
     int max=INT32_MIN;
     for(auto v: network_.getVertexSet()) {
-        for(auto e :v->getAdj()) {
-            int dif = e->getWeight() - e->getFlow();
-            if (max < dif) {
-                max = dif;
+        if(v->getInfo()!="SuperSource" & v->getInfo()!="SuperSink") {
+            for(auto e :v->getAdj()) {
+                if(e->getDest()->getInfo()!="SuperSource" & e->getDest()->getInfo()!="SuperSink") {
+                    int dif = e->getWeight() - e->getFlow();
+                    if (max < dif) {
+                        max = dif;
+                    }
+                }
             }
         }
+
     }
     return max;
 }
