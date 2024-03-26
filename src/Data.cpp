@@ -26,7 +26,7 @@ Data::Data(bool largeDataset){
 }
 
 /**
- * @brief Reads water reservoir data from a CSV file.
+ * @brief Reads water reservoir data from a Madeira CSV file.
  *
  * @complexity Time Complexity: O(R), where R is the number of water reservoir records in the file.
  */
@@ -59,6 +59,11 @@ void Data::readWaterReservoir() {
     }
 }
 
+/**
+ * @brief Reads water reservoir data from a LargeDataSet CSV file.
+ *
+ * @complexity Time Complexity: O(R), where R is the number of water reservoir records in the file.
+ */
 void Data::readWaterReservoirLarge() {
     static const string WATER_RESERVOIRS_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Reservoir.csv";
 
@@ -89,7 +94,7 @@ void Data::readWaterReservoirLarge() {
 }
 
 /**
- * @brief Reads pumping station data from a CSV file.
+ * @brief Reads pumping station data from a Madeira CSV file.
  *
  * @complexity Time Complexity: O(S), where S is the number of pumping station records in the file.
  */
@@ -119,6 +124,11 @@ void Data::readPumpingStations() {
     }
 }
 
+/**
+ * @brief Reads pumping station data from a LargeDataSet CSV file.
+ *
+ * @complexity Time Complexity: O(S), where S is the number of pumping station records in the file.
+ */
 void Data::readPumpingStationsLarge() {
     static const string PUMPING_STATIONS_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Stations.csv";
 
@@ -147,7 +157,7 @@ void Data::readPumpingStationsLarge() {
 }
 
 /**
- * @brief Reads delivery site data from a CSV file.
+ * @brief Reads delivery site data from a Madeira CSV file.
  *
  * @complexity Time Complexity: O(D), where D is the number of delivery site records in the file.
  */
@@ -185,6 +195,11 @@ void Data::readDeliverySites() {
     }
 }
 
+/**
+ * @brief Reads delivery site data from a LargeDataSet CSV file.
+ *
+ * @complexity Time Complexity: O(D), where D is the number of delivery site records in the file.
+ */
 void Data::readDeliverySitesLarge() {
     static const string DELIVERY_SITES_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Cities.csv";
 
@@ -220,7 +235,7 @@ void Data::readDeliverySitesLarge() {
 }
 
 /**
- * @brief Reads pipe data from a CSV file.
+ * @brief Reads pipe data from a Madeira CSV file.
  *
  * @complexity Time Complexity: O(P), where P is the number of pipe records in the file.
  */
@@ -260,6 +275,11 @@ void Data::readPipes() {
     }
 }
 
+/**
+ * @brief Reads pipe data from a LargeDataSet CSV file.
+ *
+ * @complexity Time Complexity: O(P), where P is the number of pipe records in the file.
+ */
 void Data::readPipesLarge() {
     static const string PIPES_FILEPATH = "../dataset/Project1LargeDataSet/Project1LargeDataSet/Pipes.csv";
 
