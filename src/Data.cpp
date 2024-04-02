@@ -644,16 +644,12 @@ void Data::removePipe(const std::string &serv_site_a, const std::string &serv_si
  * @complexity Time Complexity: O(N), where N is the total number of records in all dataset files.
  */
 void Data::restoreGraph() {
-    water_reservoirs_.clear();
-    pumping_stations_.clear();
-    delivery_sites_.clear();
-    pipes_.clear();
-
     readWaterReservoir();
     readPumpingStations();
     readDeliverySites();
     readPipes();
     addSuperSourceAndSink("SuperSource", "SuperSink");
+    edmondsKarp("SuperSource","SuperSink");
 }
 
 /**

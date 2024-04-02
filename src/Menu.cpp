@@ -86,7 +86,7 @@ void Menu::showMenu() {
                 cout << "│" << setw(53) << "│" << endl;
                 cout << "│    Options:                                      │" << endl;
                 cout << "│     [1] Choose All Cities                        │" << endl;
-                cout << "│     [2] Choose Specific City (C_1 to C_9)        │" << endl;
+                cout << "│     [2] Choose Specific City by Code             │" << endl;
                 cout << "│" << setw(53) << "│" << endl;
                 drawBottom();
                 cout << "Choose an option: ";
