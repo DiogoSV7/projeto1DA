@@ -19,8 +19,13 @@ public:
     void displayAllWaterReservoirs() const;
     void displayAllPumpingStations() const;
     void displayAllDeliverySites() const;
+    int compareWaterReservoirs(const std::unordered_map<std::string, DeliverySites>& delivery_sites_before);
+
 private:
     Data data_;
+
+
+
 };
 
 

@@ -14,7 +14,7 @@ using namespace std;
  */
 Menu::Menu(bool useLargeDataset) {
     data_ = Data(useLargeDataset);
-    data_.edmondsKarp("SuperSource", "SuperSink");
+
 }
 
 /**
@@ -145,7 +145,9 @@ void Menu::showMenu() {
                         string water_res_code;
                         cout << "Insert the Water Reservoir code:";
                         cin >> water_res_code;
-                        data_.removeWaterReservoir(water_res_code);
+                        unordered_map<string, DeliverySites> temp= data_.removeWaterReservoir(water_res_code);
+                        
+                        compareWaterReservoirs(temp);
                         break;
                     }
                     case '2': {
@@ -284,7 +286,6 @@ int Menu::displayMaxWater(vector<string> cities){
     drawBottom();
     return 0;
 }
-
 
 /**
  * @brief Displays delivery sites with water deficits.
@@ -446,4 +447,49 @@ void Menu::displayAllDeliverySites() const{
     }
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
+}
+
+int Menu::compareWaterReservoirs(const unordered_map<string, DeliverySites>& delivery_sites_before) {
+    auto network = data_.getNetwork();
+    data_.edmondsKarp("SuperSource", "SuperSink");
+
+    double maxflow = 0;
+
+    for (auto adj: delivery_sites_before) {
+        auto vertex = network.findVertex(adj.first);
+        if (vertex == NULL) {
+            cout << "Wrong City Code" << endl;
+            return 1;
+        }
+
+        float sum = 0;
+        for (auto edge: vertex->getAdj()) {
+            sum += edge->getFlow();
+        }
+        maxflow += sum;
+        int count = 0;
+        for (auto it_before: delivery_sites_before) {
+            if (adj.first == it_before.first) {
+                count++;
+                if (maxflow < it_before.second.getDemand()) {
+                    if (adj.second.getCityName() == "SuperSink" || adj.second.getCityName() == "SuperSource") {
+                        continue;
+                    }
+                    cout << "Cidade: " << adj.first << endl;
+                    cout << " - Valor antigo: " << it_before.second.getDemand() << endl;
+                    cout << " - Novo valor: " << maxflow << endl;
+                    double difference = maxflow - it_before.second.getDemand();
+                    cout << " - Diferença: " << difference << endl;
+                }
+            }
+        }
+
+
+        if (count == 0) {
+            std::cout
+                    << "Não houve alterações nos valores dos locais de entrega após a remoção do reservatório de água."
+                    << std::endl;
+        }
+
+    }
 }

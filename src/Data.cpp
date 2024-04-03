@@ -600,8 +600,15 @@ void Data::edmondsKarp(string source, string target) {
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
+unordered_map<string, DeliverySites> Data::removeWaterReservoir(const std::string &water_reservoir_code) {
+    unordered_map<string, DeliverySites> delivery_sites_before;
+    for (const auto& delivery_site : delivery_sites_) {
+        delivery_sites_before[delivery_site.getCode()] = delivery_site;
+    }
+
     network_.removeVertex(water_reservoir_code);
+    return  delivery_sites_before;
+
 }
 
 /**
@@ -771,4 +778,6 @@ void Data::checkBalance() {
 
     std::cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << std::endl;
 }
+
+
 

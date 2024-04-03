@@ -38,7 +38,7 @@ class Data {
         void edmondsKarp(std::string source, std::string target);
         Pipes findPipes(const std::string serv_point_a, const std::string serv_point_b) const;
         void addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName);
-        void removeWaterReservoir(const std::string& water_reservoir_code);
+        std::unordered_map<std::string, DeliverySites> removeWaterReservoir(const std::string& water_reservoir_code);
         void removeDeliverySite(const std::string& delivery_site_code);
         void removePumpingStations(const std::string& pumping_station_code);
         void removePipe(const std::string& serv_site_a, const std::string& serv_site_b);
@@ -48,7 +48,9 @@ class Data {
         double computePipeMaxDif();
         void balanceLoadAcrossNetwork();
         void checkBalance();
-    private:
+
+
+private:
         Graph network_;
         Graph original_graph_;
         std::unordered_set<Pipes> pipes_;

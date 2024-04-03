@@ -3,6 +3,10 @@
 #include <clocale>
 #include <iomanip>
 using namespace std;
+// defice errrado
+//restaurar o graph da madeira está a restaurar mal E O DE PORTUGAL TAMBÉM
+//mostrar diferenças ao remover partes do graph
+// NÃO DEIXA REMOVER 2 PUMPING STATIONS
 
 int main() {
     setlocale(LC_ALL,"Portuguese");
