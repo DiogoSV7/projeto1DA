@@ -317,6 +317,7 @@ void Menu::displayDisplayMenu() const {
         cout << "│     [1] Display Water Reservoirs                 │" << endl;
         cout << "│     [2] Display Pumping Stations                 │" << endl;
         cout << "│     [3] Display Delivery Sites                   │" << endl;
+        cout << "│     [4] Display Pipes                            │" << endl;
         cout << "│     [Q] Quit Display Menu                        │" << endl; 
         cout << "│" << setw(53) << "│" << endl;
         drawBottom();
@@ -334,6 +335,10 @@ void Menu::displayDisplayMenu() const {
             }
             case '3': {
                 displayAllDeliverySites();
+                break;
+            }
+            case '4': {
+                displayAllPipes();
                 break;
             }
             case 'Q': {
@@ -444,3 +449,26 @@ void Menu::displayAllDeliverySites() const{
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
 }
+
+/**
+ * @brief Displays all pipes.
+ *
+ * @complexity Time Complexity: O(P), where P is the number of pipes.
+ */
+void Menu::displayAllPipes() const {
+
+    cout << "┌─ Pipes ────────────────────────────────────────────────────┐" << endl;
+    cout << "│" << setw(63) << "│" << endl;
+
+    for(const auto& pipe : data_.getPipes()) {
+        cout << "│ " << left << setw(8) << "Source: " << right << setw(5) << pipe.getCitySourceName()
+             << setw(8) << "Sink: " << setw(5) << pipe.getCitySinkName()
+             << setw(14) << "Capacity: " << setw(3) << pipe.getCapacity()
+             << setw(13) << "Direction: " << setw(2) << pipe.getDirection() << " │" << endl;
+    }
+    cout << "│" << setw(63) << "│" << endl;
+    cout << "└────────────────────────────────────────────────────────────┘" << endl;
+}
+
+
+

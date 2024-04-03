@@ -354,6 +354,15 @@ unordered_set<DeliverySites> Data::getDeliverySites() const{
 }
 
 /**
+ * @brief Retrieves the set of pipes.
+ *
+ * @complexity Time Complexity: O(1)
+ */
+unordered_set<Pipes> Data::getPipes() const {
+    return pipes_;
+}
+
+/**
  * @brief Finds a water reservoir by its code.
  *
  * @complexity Time Complexity: O(R), where R is the number of water reservoirs.
@@ -637,7 +646,14 @@ void Data::removeDeliverySite(const std::string &delivery_site_code) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removePipe(const std::string &serv_site_a, const std::string &serv_site_b) {
-    network_.removeEdge(serv_site_a,serv_site_b);
+    Pipes pipe = findPipes(serv_site_a,serv_site_b);
+    pipes_.erase(pipe);
+    if(pipe.getDirection()==1){
+        network_.removeEdge(serv_site_a,serv_site_b);
+    }else if(pipe.getDirection()==0){
+        network_.removeEdge(serv_site_b,serv_site_a);
+        network_.removeEdge(serv_site_a,serv_site_b);
+    }
 }
 
 /**
@@ -646,6 +662,7 @@ void Data::removePipe(const std::string &serv_site_a, const std::string &serv_si
  * @complexity Time Complexity: O(N), where N is the total number of records in all dataset files.
  */
 void Data::restoreGraph() {
+    network_ = Graph();
     if (large_dataset_) {
         readWaterReservoirLarge();
         readPumpingStationsLarge();
@@ -657,8 +674,8 @@ void Data::restoreGraph() {
         readDeliverySites();
         readPipes();
     }
-    addSuperSourceAndSink("SuperSource", "SuperSink");
-    edmondsKarp("SuperSource", "SuperSink");
+    addSuperSourceAndSink("SuperSource","SuperSink");
+    edmondsKarp("SuperSource","SuperSink");
 }
 
 /**

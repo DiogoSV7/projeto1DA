@@ -28,6 +28,7 @@ class Data {
         std::unordered_set<WaterReservoir> getWaterReservoirs() const;
         std::unordered_set<PumpingStations> getPumpingStations() const;
         std::unordered_set<DeliverySites> getDeliverySites() const;
+        std::unordered_set<Pipes> getPipes() const;
         Graph getNetwork() const;
         std::unordered_map<std::string, double> maxWaterCity(const std::string& city_name);
         std::vector<std::pair<std::string, double>> checkWaterNeeds();
