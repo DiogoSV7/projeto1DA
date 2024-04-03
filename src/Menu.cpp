@@ -94,7 +94,6 @@ void Menu::showMenu() {
                 switch (key1) {
                     case '1': {
                         vector<string> v;
-                        //percorrer lista de cidades e fazer a função displayMaxWater para cada uma
                         for(DeliverySites city: data_.getDeliverySites()){
                             v.push_back(city.getCode());
                         }
@@ -104,7 +103,7 @@ void Menu::showMenu() {
                     }
                     case '2': {
                         string city;
-                        cout << "Choose a city (C_1 to C_9): ";
+                        cout << "Choose a city ";
                         cin >> city;
                         auto vertex = data_.getNetwork().findVertex(city);
                         if (vertex == NULL) {
@@ -266,14 +265,14 @@ int Menu::displayMaxWater(vector<string> cities){
             }
             maxflow+=sum;
             std::cout << "│" << std::setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << std::endl;
-            outputFile << "│" << std::setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << std::endl;
+            outputFile <<  std::setw(7) << adj << " : " << left << setw(40) << sum << right <<  std::endl;
         }
         if(cities.size()+1==data_.getDeliverySites().size()) {
             cout << "│                                                  │" << endl;
             std::cout << "│" << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
                       << std::endl;
-            outputFile << "│" << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
-                       << std::endl;
+            outputFile << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right
+                       << std::endl << std::endl;
         }
         outputFile.close();
     }else {
