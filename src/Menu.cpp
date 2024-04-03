@@ -107,8 +107,7 @@ void Menu::showMenu() {
                         cin >> city;
                         auto vertex = data_.getNetwork().findVertex(city);
                         if (vertex == NULL) {
-                            cout << "Wrong City Code"<< endl;
-                            break;
+                            continue;
                         }
                         vector<string> v(1,city);
                         if(displayMaxWater(v)==0){
@@ -255,8 +254,7 @@ int Menu::displayMaxWater(vector<string> cities){
         for (auto adj: cities) {
             auto vertex = network.findVertex(adj);
             if (vertex == NULL) {
-                cout << "Wrong City Code"<< endl;
-                return 1;
+                continue;
             }
 
             float sum = 0;
