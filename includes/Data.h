@@ -55,7 +55,7 @@ class Data {
         std::unordered_set<WaterReservoir> water_reservoirs_;
         std::unordered_set<PumpingStations> pumping_stations_;
         std::unordered_set<DeliverySites> delivery_sites_;
-
+        bool large_dataset_;
 };
 
 

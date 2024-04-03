@@ -16,11 +16,13 @@ Data::Data(bool largeDataset){
         readDeliverySitesLarge();
         readWaterReservoirLarge();
         readPipesLarge();
+        large_dataset_ = true;
     } else {
         readPumpingStations();
         readDeliverySites();
         readWaterReservoir();
         readPipes();
+        large_dataset_ = false;
     }
     addSuperSourceAndSink("SuperSource", "SuperSink");
 }
@@ -644,12 +646,19 @@ void Data::removePipe(const std::string &serv_site_a, const std::string &serv_si
  * @complexity Time Complexity: O(N), where N is the total number of records in all dataset files.
  */
 void Data::restoreGraph() {
-    readWaterReservoir();
-    readPumpingStations();
-    readDeliverySites();
-    readPipes();
+    if (large_dataset_) {
+        readWaterReservoirLarge();
+        readPumpingStationsLarge();
+        readDeliverySitesLarge();
+        readPipesLarge();
+    } else {
+        readWaterReservoir();
+        readPumpingStations();
+        readDeliverySites();
+        readPipes();
+    }
     addSuperSourceAndSink("SuperSource", "SuperSink");
-    edmondsKarp("SuperSource","SuperSink");
+    edmondsKarp("SuperSource", "SuperSink");
 }
 
 /**
