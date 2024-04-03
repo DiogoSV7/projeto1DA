@@ -19,6 +19,7 @@ public:
     void displayAllWaterReservoirs() const;
     void displayAllPumpingStations() const;
     void displayAllDeliverySites() const;
+    void displayAllPipes() const;
 private:
     Data data_;
 };
