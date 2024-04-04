@@ -138,6 +138,7 @@ void Menu::showMenu() {
                 drawBottom();
                 cout << "Choose an option: ";
                 cin >> key2;
+                unordered_map<string, pair<DeliverySites, int>> delivery_sites_before = getDeliverySitesBefore();
                 switch (key2) {
                     case '1': {
                         string water_res_code;
@@ -177,6 +178,9 @@ void Menu::showMenu() {
                         cout << endl << "Invalid option!" << endl;
                     }
                 };
+                if(!delivery_sites_before.empty()) {
+                    showDiferences(delivery_sites_before);
+                }
                 break;
             }
             case '5' : {
@@ -473,3 +477,63 @@ void Menu::displayAllPipes() const {
 
 
 
+unordered_map<string, pair<DeliverySites, int>> Menu::getDeliverySitesBefore() {
+    unordered_map<string, pair<DeliverySites, int>> delivery_sites_before;
+    for (const auto &delivery_site: data_.getDeliverySites()) {
+        int maxflow=0;
+        auto vertex = data_.getNetwork().findVertex(delivery_site.getCode());
+        if (vertex == NULL) {
+            continue;
+        }
+
+        float sum = 0;
+        for (auto edge: vertex->getAdj()) {
+            sum += edge->getFlow();
+        }
+        maxflow+=sum;
+        delivery_sites_before[delivery_site.getCode()].first = delivery_site;
+        delivery_sites_before[delivery_site.getCode()].second= maxflow;
+    }
+    return delivery_sites_before;
+}
+
+void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, int>> delivery_sites_before) {
+    cout << "┌─ City Diferences ──────────────────────────────────────────┐" << endl;
+    for(auto vertex: data_.getNetwork().getVertexSet()){
+        if (vertex == NULL || vertex->getType() !=2) {
+            continue;
+        }
+        auto info=vertex->getInfo();
+        auto delivery= data_.findDeliverySite(info);
+        int maxflow=0;
+
+
+        float sum = 0;
+        for (auto edge: vertex->getAdj()) {
+            sum += edge->getFlow();
+        }
+        maxflow+=sum;
+
+        if(delivery.getCode() == info){
+            if(maxflow!=delivery_sites_before[info].second) {
+                std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
+                cout << "│ " << setw(6) << "  Cidade: " << delivery.getCode();
+                if (delivery.getDemand() > maxflow)
+                    cout << " - IN DEFICE" << setw(37) <<"│"<<endl;
+                else
+                    cout << right << setw(49)<<"│" << endl;
+                cout << "│ " << left << setw(6) << " - Old Value  : " << setw(4) << right<<delivery_sites_before[info].second
+                        << right<<setw(42)<< "│" << std::endl;
+                cout << "│ " << left << setw(6) << " - New Value  : " << setw(4) << right <<maxflow << right<<setw(42)<<"│" << std::endl;
+                double difference = maxflow - delivery_sites_before[info].second;
+
+                // Output the first line
+                std::cout << "│ " << std::left << std::setw(6) << " - Difference : " << right<<std::setw(4) << difference << right<<setw(42)<<"│" << std::endl;
+
+
+            }
+        }
+    }
+    std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
+    std::cout << "└────────────────────────────────────────────────────────────┘" << std::endl;
+}

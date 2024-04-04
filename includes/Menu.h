@@ -20,6 +20,8 @@ public:
     void displayAllPumpingStations() const;
     void displayAllDeliverySites() const;
     void displayAllPipes() const;
+    std::unordered_map<std::string, std::pair<DeliverySites, int>> getDeliverySitesBefore();
+    void showDiferences(std::unordered_map<std::string, std::pair<DeliverySites, int>> delivery_sites_before);
 private:
     Data data_;
 };

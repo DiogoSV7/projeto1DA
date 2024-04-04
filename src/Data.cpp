@@ -612,57 +612,8 @@ void Data::edmondsKarp(string source, string target) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
-    unordered_map<string, pair<DeliverySites, int>> delivery_sites_before;
-    for (const auto &delivery_site: delivery_sites_) {
-        int maxflow=0;
-        auto vertex = network_.findVertex(delivery_site.getCode());
-        if (vertex == NULL) {
-            continue;
-        }
-
-        float sum = 0;
-        for (auto edge: vertex->getAdj()) {
-            sum += edge->getFlow();
-        }
-        maxflow+=sum;
-        delivery_sites_before[delivery_site.getCode()].first = delivery_site;
-        delivery_sites_before[delivery_site.getCode()].second= maxflow;
-    }
-
     network_.removeVertex(water_reservoir_code);
-
     edmondsKarp("SuperSource", "SuperSink");
-
-    for(auto vertex: network_.getVertexSet()){
-        if (vertex == NULL || vertex->getType() !=2) {
-            continue;
-        }
-        auto info=vertex->getInfo();
-        auto delivery= findDeliverySite(info);
-        int maxflow=0;
-
-
-        float sum = 0;
-        for (auto edge: vertex->getAdj()) {
-            sum += edge->getFlow();
-        }
-        maxflow+=sum;
-
-        if(delivery.getCode() == info){
-            if(maxflow<delivery_sites_before[info].second){
-
-                cout << "Cidade: " << delivery.getCode() ;
-                if(delivery.getDemand()>maxflow)
-                    cout<<" -- IN DEFICE";
-                cout << endl;
-                cout << " - Valor antigo: " << delivery_sites_before[info].second << std::endl;
-                cout << " - Novo valor: " << maxflow << std::endl;
-                double difference = delivery_sites_before[info].second - maxflow;
-                cout << " - Diferença: " << difference << std::endl;
-            }
-        }
-    }
-
 }
 
 /**
@@ -673,28 +624,8 @@ void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removePumpingStations(const std::string &pumping_station_code) {
-    unordered_map<string, pair<PumpingStations, int>> pumping_stations_before;
-    for (const auto &pumping_station: pumping_stations_) {
-        int maxflow = 0;
-        auto vertex = network_.findVertex(pumping_station.getPumpingStationCode());
-        if (vertex == NULL) {
-            continue;
-        }
-
-        float sum = 0;
-        for (auto edge: vertex->getAdj()) {
-            sum += edge->getFlow();
-        }
-        maxflow += sum;
-        pumping_stations_before[pumping_station.getPumpingStationCode()].first = pumping_station;
-        pumping_stations_before[pumping_station.getPumpingStationCode()].second = maxflow;
-
-
-    }
     network_.removeVertex(pumping_station_code);
-
     edmondsKarp("SuperSource", "SuperSink");
-
 }
 
 /**
@@ -705,23 +636,6 @@ void Data::removePumpingStations(const std::string &pumping_station_code) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removeDeliverySite(const std::string &delivery_site_code) {
-    unordered_map<string, pair<DeliverySites, int>> delivery_sites_before;
-    for (const auto &delivery_site: delivery_sites_) {
-        int maxflow=0;
-        auto vertex = network_.findVertex(delivery_site.getCode());
-        if (vertex == NULL) {
-            continue;
-        }
-
-        float sum = 0;
-        for (auto edge: vertex->getAdj()) {
-            sum += edge->getFlow();
-        }
-        maxflow+=sum;
-        delivery_sites_before[delivery_site.getCode()].first = delivery_site;
-        delivery_sites_before[delivery_site.getCode()].second= maxflow;
-    }
-
     network_.removeVertex(delivery_site_code);
     edmondsKarp("SuperSource", "SuperSink");
 }
@@ -735,6 +649,7 @@ void Data::removeDeliverySite(const std::string &delivery_site_code) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removePipe(const std::string &serv_site_a, const std::string &serv_site_b) {
+
     Pipes pipe = findPipes(serv_site_a,serv_site_b);
     pipes_.erase(pipe);
     if(pipe.getDirection()==1){
