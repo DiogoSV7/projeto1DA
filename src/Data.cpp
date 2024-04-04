@@ -434,7 +434,7 @@ std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
             DeliverySites del_site = findDeliverySite(vertex->getInfo());
             double demand = del_site.getDemand();
 
-            edmondsKarp("SuperSource", del_site.getCode());
+
 
             double total_flow = 0;
             for (auto e : vertex->getIncoming()) {
