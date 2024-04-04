@@ -425,11 +425,18 @@ bool Graph::removeVertex(const std::string& in) {
     }
     Vertex* v = it->second;
     for (auto u : vertexSet) {
-        u->removeEdge(v->getInfo());
+        if (u != v) {
+            u->removeEdge(v->getInfo());
+        }
+        else {
+            u->removeOutgoingEdges();
+        }
     }
     vertexSet.erase(std::remove(vertexSet.begin(), vertexSet.end(), v), vertexSet.end());
     vertexMap.erase(it);
     delete v;
+    // Após remover o vértice, atualize o fluxo residual das arestas
+
     return true;
 }
 

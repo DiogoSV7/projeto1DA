@@ -241,7 +241,7 @@ int Menu::extractNumberFromCode(const std::string& code) {
 int Menu::displayMaxWater(vector<string> cities){
     std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
     auto network= data_.getNetwork();
-    data_.edmondsKarp("SuperSource", "SuperSink");
+
     cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
     double maxflow=0;
     cout<<"┌── Max Water Flow ────────────────────────────────┐"<<endl;
@@ -302,6 +302,7 @@ void Menu::displayWaterNeeds(){
     }
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
+
 }
 /**
  * @brief Displays the menu for displaying various options.

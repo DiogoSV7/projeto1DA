@@ -612,7 +612,57 @@ void Data::edmondsKarp(string source, string target) {
  * @complexity Time Complexity: O(1)
  */
 void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
+    unordered_map<string, pair<DeliverySites, int>> delivery_sites_before;
+    for (const auto &delivery_site: delivery_sites_) {
+        int maxflow=0;
+        auto vertex = network_.findVertex(delivery_site.getCode());
+        if (vertex == NULL) {
+            continue;
+        }
+
+        float sum = 0;
+        for (auto edge: vertex->getAdj()) {
+            sum += edge->getFlow();
+        }
+        maxflow+=sum;
+        delivery_sites_before[delivery_site.getCode()].first = delivery_site;
+        delivery_sites_before[delivery_site.getCode()].second= maxflow;
+    }
+
     network_.removeVertex(water_reservoir_code);
+
+    edmondsKarp("SuperSource", "SuperSink");
+
+    for(auto vertex: network_.getVertexSet()){
+        if (vertex == NULL || vertex->getType() !=2) {
+            continue;
+        }
+        auto info=vertex->getInfo();
+        auto delivery= findDeliverySite(info);
+        int maxflow=0;
+
+
+        float sum = 0;
+        for (auto edge: vertex->getAdj()) {
+            sum += edge->getFlow();
+        }
+        maxflow+=sum;
+
+        if(delivery.getCode() == info){
+            if(maxflow<delivery_sites_before[info].second){
+
+                cout << "Cidade: " << delivery.getCode() ;
+                if(delivery.getDemand()>maxflow)
+                    cout<<" -- IN DEFICE";
+                cout << endl;
+                cout << " - Valor antigo: " << delivery_sites_before[info].second << std::endl;
+                cout << " - Novo valor: " << maxflow << std::endl;
+                double difference = delivery_sites_before[info].second - maxflow;
+                cout << " - Diferença: " << difference << std::endl;
+            }
+        }
+    }
+
 }
 
 /**
