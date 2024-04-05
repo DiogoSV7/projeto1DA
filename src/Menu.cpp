@@ -566,19 +566,20 @@ void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, in
 
         if(delivery.getCode() == info){
             if(maxflow!=delivery_sites_before[info].second) {
+                if(count==0){count=1;}
                 std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
                 cout << "│ " << setw(6) << "  Cidade: " << delivery.getCode();
                 if (delivery.getDemand() > maxflow)
                     cout << " - IN DEFICE" << setw(37) <<"│"<<endl;
                 else
                     cout << right << setw(49)<<"│" << endl;
-                cout << "│ " << left << setw(6) << " - Old Value  : " << setw(4) << right<<delivery_sites_before[info].second
-                        << right<<setw(42)<< "│" << std::endl;
-                cout << "│ " << left << setw(6) << " - New Value  : " << setw(4) << right <<maxflow << right<<setw(42)<<"│" << std::endl;
+                cout << "│ " << left << setw(6) << " - Old Value  : " << fixed<<setprecision(2)<<setw(8) << right<<delivery_sites_before[info].second
+                        << right<<setw(38)<< "│" << std::endl;
+                cout << "│ " << left << setw(6) << " - New Value  : " << fixed<<setprecision(2)<<setw(8) << right <<maxflow << right<<setw(38)<<"│" << std::endl;
                 double difference = maxflow - delivery_sites_before[info].second;
 
                 // Output the first line
-                std::cout << "│ " << std::left << std::setw(6) << " - Difference : " << right<<std::setw(4) << difference << right<<setw(42)<<"│" << std::endl;
+                std::cout << "│ " << std::left << std::setw(6) << " - Difference : " << right<<fixed<<std::setw(8) << difference << right<<setw(38)<<"│" << std::endl;
 
 
             }
