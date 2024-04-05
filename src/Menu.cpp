@@ -57,6 +57,7 @@ void Menu::drawBottom(){
 void Menu::showMenu() {
     char key;
     bool flag = true;
+
     while (flag) {
         drawTop();
         cout << "│" << setw(53) << "│" << endl;
@@ -71,6 +72,14 @@ void Menu::showMenu() {
         drawBottom();
         cout << "Choose an option: ";
         cin >> key;
+        if((key-'0')>5 ||(key-'0')<1){
+            if(key=='Q'){}
+
+            else{
+                cout << endl << "Invalid option!" << endl;
+                break;
+            }
+        }
         switch (key) {
             case '1': {
                 displayDisplayMenu();
@@ -87,10 +96,19 @@ void Menu::showMenu() {
                 cout << "│    Options:                                      │" << endl;
                 cout << "│     [1] Choose All Cities                        │" << endl;
                 cout << "│     [2] Choose Specific City by Code             │" << endl;
+                cout << "│     [Q] Exit                                     │" << endl;
                 cout << "│" << setw(53) << "│" << endl;
                 drawBottom();
                 cout << "Choose an option: ";
                 cin >> key1;
+                if((key1-'0')>2 ||(key1-'0')<1){
+                    if(key1=='Q'){}
+
+                    else{
+                        cout << endl << "Invalid option!" << endl;
+                        break;
+                    }
+                }
                 switch (key1) {
                     case '1': {
                         vector<string> v;
@@ -134,16 +152,27 @@ void Menu::showMenu() {
                 cout << "│     [3] Remove Delivery Site                     │" << endl;
                 cout << "│     [4] Remove Pipe                              │" << endl;
                 cout << "│     [5] Restore Graph                            │" << endl;
+                cout << "│     [Q] Exit                                     │" << endl;
                 cout << "│" << setw(53) << "│" << endl;
                 drawBottom();
                 cout << "Choose an option: ";
                 cin >> key2;
+                if((key2-'0')>5 ||(key2-'0')<1){
+                    if(key2=='Q'){}
+
+                    else{
+                        cout << endl << "Invalid option!" << endl;
+                        break;
+                    }
+                }
                 unordered_map<string, pair<DeliverySites, int>> delivery_sites_before = getDeliverySitesBefore();
                 switch (key2) {
                     case '1': {
                         string water_res_code;
                         cout << "Insert the Water Reservoir code:";
                         cin >> water_res_code;
+                        data_.findWaterReservoir(water_res_code);
+
                         data_.removeWaterReservoir(water_res_code);
                         break;
                     }
@@ -151,6 +180,7 @@ void Menu::showMenu() {
                         string pumping_station_code;
                         cout << "Insert the Pumping Station code:";
                         cin >> pumping_station_code;
+                        data_.findPumpingStation(pumping_station_code);
                         data_.removePumpingStations(pumping_station_code);
                         break;
                     }
@@ -158,6 +188,7 @@ void Menu::showMenu() {
                         string delivery_site_code;
                         cout << "Insert the Delivery Site code:";
                         cin >> delivery_site_code;
+                        data_.findDeliverySite(delivery_site_code);
                         data_.removeDeliverySite(delivery_site_code);
                         break;
                     }
@@ -165,8 +196,11 @@ void Menu::showMenu() {
                         string serv_site_a, serv_site_b;
                         cout << "Insert the Service Site A code:";
                         cin >> serv_site_a;
+                        data_.findDeliverySite(serv_site_a);
                         cout << "Insert the Service Site B code:";
                         cin >> serv_site_b;
+                        data_.findDeliverySite(serv_site_b);
+                        data_.findPipes(serv_site_a,serv_site_b);
                         data_.removePipe(serv_site_a,serv_site_b);
                         break;
                     }
@@ -174,13 +208,16 @@ void Menu::showMenu() {
                         data_.restoreGraph();
                         break;
                     }
+                    case 'Q':{
+                        break;
+                    }
                     default: {
                         cout << endl << "Invalid option!" << endl;
                     }
                 };
-                if(!delivery_sites_before.empty()) {
+                if((key2!='Q') && (key2!='5'))
                     showDiferences(delivery_sites_before);
-                }
+
                 break;
             }
             case '5' : {
@@ -199,6 +236,7 @@ void Menu::showMenu() {
 
             case 'Q' : {
                 flag = false;
+
                 break;
             }
             default: {
@@ -207,6 +245,10 @@ void Menu::showMenu() {
 
         };
         cout << endl;
+        if(!flag){
+            cout << "See you next time!"<< endl;
+            break;
+        }
         cout << "Would you like to do something else? (Y/N) \n";
         char newCicle;
         cin >> newCicle;
@@ -316,44 +358,51 @@ void Menu::displayWaterNeeds(){
 void Menu::displayDisplayMenu() const {
     char key;
 
-        cout << "┌── Display Menu ──────────────────────────────────┐" << endl;
-        cout << "│" << setw(53) << "│" << endl;
-        cout << "│    Options:                                      │" << endl;
-        cout << "│     [1] Display Water Reservoirs                 │" << endl;
-        cout << "│     [2] Display Pumping Stations                 │" << endl;
-        cout << "│     [3] Display Delivery Sites                   │" << endl;
-        cout << "│     [4] Display Pipes                            │" << endl;
-        cout << "│     [Q] Quit Display Menu                        │" << endl; 
-        cout << "│" << setw(53) << "│" << endl;
-        drawBottom();
-        cout << "Choose an option: ";
-        cin >> key;
+    cout << "┌── Display Menu ──────────────────────────────────┐" << endl;
+    cout << "│" << setw(53) << "│" << endl;
+    cout << "│    Options:                                      │" << endl;
+    cout << "│     [1] Display Water Reservoirs                 │" << endl;
+    cout << "│     [2] Display Pumping Stations                 │" << endl;
+    cout << "│     [3] Display Delivery Sites                   │" << endl;
+    cout << "│     [4] Display Pipes                            │" << endl;
+    cout << "│     [Q] Quit Display Menu                        │" << endl;
+    cout << "│" << setw(53) << "│" << endl;
+    drawBottom();
+    cout << "Choose an option: ";
+    cin >> key;
+    if((key-'0')>5 ||(key-'0')<1){
+        if(key=='Q'){}
 
-        switch (key) {
-            case '1': {
-                displayAllWaterReservoirs();
-                break;
-            }
-            case '2': {
-                displayAllPumpingStations();
-                break;
-            }
-            case '3': {
-                displayAllDeliverySites();
-                break;
-            }
-            case '4': {
-                displayAllPipes();
-                break;
-            }
-            case 'Q': {
+        else{
+            cout << endl << "Invalid option!" << endl;
+            return;
+        }
+    }
+    switch (key) {
+        case '1': {
+            displayAllWaterReservoirs();
+            break;
+        }
+        case '2': {
+            displayAllPumpingStations();
+            break;
+        }
+        case '3': {
+            displayAllDeliverySites();
+            break;
+        }
+        case '4': {
+            displayAllPipes();
+            break;
+        }
+        case 'Q': {
 
-                break;
-            }
-            default: {
-                cout << endl << "Invalid option!" << endl;
-            }
-        };
+            break;
+        }
+        default: {
+            cout << endl << "Invalid option!" << endl;
+        }
+    };
 
 
 }
@@ -498,6 +547,7 @@ unordered_map<string, pair<DeliverySites, int>> Menu::getDeliverySitesBefore() {
 }
 
 void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, int>> delivery_sites_before) {
+    int count =0;
     cout << "┌─ City Diferences ──────────────────────────────────────────┐" << endl;
     for(auto vertex: data_.getNetwork().getVertexSet()){
         if (vertex == NULL || vertex->getType() !=2) {
@@ -533,6 +583,10 @@ void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, in
 
             }
         }
+    }
+    if(count ==0) {
+        std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
+        cout << "│" << "                    No diferences found!                    " << "│" << endl;
     }
     std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
     std::cout << "└────────────────────────────────────────────────────────────┘" << std::endl;

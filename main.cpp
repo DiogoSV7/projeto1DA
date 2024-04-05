@@ -5,6 +5,7 @@
 using namespace std;
 
 int main() {
+    //qualquer n diferente de 2 seleciona o data set da madeira
     setlocale(LC_ALL,"Portuguese");
     char dataset_choice;
     cout << "┌─── Welcome to DAms ──────────────────────────────┐" << endl;
@@ -24,6 +25,11 @@ int main() {
     std::cin >> dataset_choice;
     bool useLargeDataset = (dataset_choice == '2');
     Menu menu(useLargeDataset);
-    menu.showMenu();
+    if(dataset_choice != '1' && dataset_choice != '2'){
+        throw std::logic_error("Invalid dataset choice. Exiting...");
+        return 0;
+    }
+    else
+        menu.showMenu();
     return 0;
 }
