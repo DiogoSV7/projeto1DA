@@ -121,7 +121,7 @@ void Menu::showMenu() {
                     }
                     case '2': {
                         string city;
-                        cout << "Choose a city ";
+                        cout << "Choose a city: ";
                         cin >> city;
                         auto vertex = data_.getNetwork().findVertex(city);
                         if (vertex == NULL) {
@@ -272,8 +272,8 @@ void Menu::showMenu() {
  *
  * Time Complexity: O(1)
  */
-int Menu::extractNumberFromCode(const std::string& code) {
-    return std::stoi(code.substr(2));
+int Menu::extractNumberFromCode(const string& code) {
+    return stoi(code.substr(2));
 }
 
 /**
@@ -285,15 +285,15 @@ int Menu::extractNumberFromCode(const std::string& code) {
  * @complexity Time Complexity:: O(d * p), where d is the number of cities and p is the maximum number of adjacent edges for a city.
  */
 int Menu::displayMaxWater(vector<string> cities){
-    std::ofstream outputFile("../saveddata/max_water_output.txt", std::ios::app); // Open in append mode
+    ofstream outputFile("../saveddata/max_water_output.txt", ios::app);
     auto network= data_.getNetwork();
 
-    cities.erase(std::remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
+    cities.erase(remove(cities.begin(), cities.end(), "SuperSink"), cities.end());
     double maxflow=0;
     cout<<"┌── Max Water Flow ────────────────────────────────┐"<<endl;
     cout << "│" << setw(53) << "│" << endl;
 
-    std::sort(cities.begin(), cities.end(), [this](const std::string& a, const std::string& b) {
+    sort(cities.begin(), cities.end(), [this](const string& a, const string& b) {
         return extractNumberFromCode(a) < extractNumberFromCode(b);
     });
     if (outputFile.is_open()) {
@@ -308,19 +308,19 @@ int Menu::displayMaxWater(vector<string> cities){
                 sum += edge->getFlow();
             }
             maxflow+=sum;
-            std::cout << "│" << std::setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << std::endl;
-            outputFile <<  std::setw(7) << adj << " : " << left << setw(40) << sum << right <<  std::endl;
+            cout << "│" << setw(7) << adj << " : " << left << setw(40) << sum << right << "│" << endl;
+            outputFile <<  setw(7) << adj << " : " << left << setw(40) << sum << right <<  endl;
         }
         if(cities.size()+1==data_.getDeliverySites().size()) {
             cout << "│                                                  │" << endl;
-            std::cout << "│" << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
-                      << std::endl;
-            outputFile << std::setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right
-                       << std::endl << std::endl;
+            cout << "│" << setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right << "│"
+                      << endl;
+            outputFile << setw(9) << "MaxFlow" << " : " << left << setw(38) << maxflow << right
+                       << endl << endl;
         }
         outputFile.close();
     }else {
-        std::cerr << "Error: Unable to open output file!" << std::endl;
+        cerr << "Error: Unable to open output file!" << endl;
         return 1;
     }
     cout << "│" << setw(53) << "│" << endl;
@@ -337,14 +337,14 @@ int Menu::displayMaxWater(vector<string> cities){
 void Menu::displayWaterNeeds(){
     const vector<pair<string, double>>& water_needs_vector = data_.checkWaterNeeds();
     if (water_needs_vector.empty()) {
-        std::cout << "All delivery sites are adequately supplied. No deficits found." << std::endl;
+        cout << "All delivery sites are adequately supplied. No deficits found." << endl;
         return;
     }
 
     cout << "┌── Water Deficits ────────────────────────────────┐" << endl;
     cout << "│" << setw(53) << "│" << endl;
     for (const auto& pair : water_needs_vector) {
-        std::cout << "│ " << left << setw(20) << "Delivery Site code: " << left << setw(10) << pair.first << left << setw(10) << "Deficit: " << left << setw(9) <<  pair.second  << right << "│" << std::endl;
+        cout << "│ " << left << setw(20) << "Delivery Site code: " << left << setw(10) << pair.first << left << setw(10) << "Deficit: " << left << setw(9) <<  pair.second  << right << "│" << endl;
     }
     cout << "│" << setw(53) << "│" << endl;
     drawBottom();
@@ -417,11 +417,11 @@ void Menu::displayDisplayMenu() const {
  *
  * @complexity Time Complexity: O(n), where n is the length of the input string.
  */
-int Menu::countAccentedCharacters(const std::string& str) {
-    std::string accentedCharacters = "áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãõÃÕçÇ";
+int Menu::countAccentedCharacters(const string& str) {
+    string accentedCharacters = "áéíóúÁÉÍÓÚàèìòùÀÈÌÒÙâêîôûÂÊÎÔÛãõÃÕçÇ";
     float count = 0;
     for (char c : str) {
-        if (accentedCharacters.find(c) != std::string::npos) {
+        if (accentedCharacters.find(c) != string::npos) {
             count+=0.5;
         }
     }
@@ -434,7 +434,7 @@ int Menu::countAccentedCharacters(const std::string& str) {
  */
 void Menu::displayAllWaterReservoirs() const{
 
-    std::unordered_set<WaterReservoir> reservoirs;
+    unordered_set<WaterReservoir> reservoirs;
     for (auto water_res : data_.getNetwork().getVertexSet()) {
         if (water_res->getType() == 0) {
             reservoirs.insert(data_.findWaterReservoir(water_res->getInfo()));
@@ -463,7 +463,7 @@ void Menu::displayAllWaterReservoirs() const{
  * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph.
  */
 void Menu::displayAllPumpingStations() const{
-    std::unordered_set<PumpingStations> pumping_stations;
+    unordered_set<PumpingStations> pumping_stations;
     for(auto pump_sta : data_.getNetwork().getVertexSet()){
         if(pump_sta->getType()==1){
             pumping_stations.insert(data_.findPumpingStation(pump_sta->getInfo()));
@@ -484,7 +484,7 @@ void Menu::displayAllPumpingStations() const{
  * @complexity Time Complexity: Time Complexity: O(V), where V is the number of vertices in the graph.
  */
 void Menu::displayAllDeliverySites() const{
-    std::unordered_set<DeliverySites> delivery_sites;
+    unordered_set<DeliverySites> delivery_sites;
     for(auto del_sites : data_.getNetwork().getVertexSet()){
         if(del_sites->getType()==2){
             delivery_sites.insert(data_.findDeliverySite(del_sites->getInfo()));
@@ -524,8 +524,14 @@ void Menu::displayAllPipes() const {
     cout << "└────────────────────────────────────────────────────────────┘" << endl;
 }
 
-
-
+/**
+ * @brief Retrieves delivery site information before any changes.
+ *
+ * This function retrieves information about delivery sites before any changes have been made to the data.
+ * It constructs and returns an unordered map containing pairs of delivery site information and their corresponding maximum flow values.
+ *
+ * @return An unordered map containing pairs of delivery site information and their corresponding maximum flow values.
+ */
 unordered_map<string, pair<DeliverySites, int>> Menu::getDeliverySitesBefore() {
     unordered_map<string, pair<DeliverySites, int>> delivery_sites_before;
     for (const auto &delivery_site: data_.getDeliverySites()) {
@@ -546,8 +552,23 @@ unordered_map<string, pair<DeliverySites, int>> Menu::getDeliverySitesBefore() {
     return delivery_sites_before;
 }
 
-void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, int>> delivery_sites_before) {
+/**
+ * @brief Displays differences in city data and saves them to a file.
+ *
+ * This function displays the differences in city data between the current state
+ * and a previous state and saves the information to a file named "affected_cities_output.txt".
+ *
+ * @param delivery_sites_before An unordered map containing the city data before the changes.
+ */
+void Menu::showDiferences(unordered_map<string, pair<DeliverySites, int>> delivery_sites_before) {
     int count =0;
+    ofstream outputFile("/Users/diogovieira/CLionProjects/projeto1DA/saveddata/affected_cities_output.txt");
+    if (!outputFile.is_open()) {
+        cerr << "Error: Unable to open output file." << endl;
+        return;
+    }
+
+
     cout << "┌─ City Diferences ──────────────────────────────────────────┐" << endl;
     for(auto vertex: data_.getNetwork().getVertexSet()){
         if (vertex == NULL || vertex->getType() !=2) {
@@ -567,28 +588,43 @@ void Menu::showDiferences(std::unordered_map<std::string, pair<DeliverySites, in
         if(delivery.getCode() == info){
             if(maxflow!=delivery_sites_before[info].second) {
                 if(count==0){count=1;}
-                std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
+                cout << "│" << right << setw(63) << "│" << endl;
+                outputFile << endl;
                 cout << "│ " << setw(6) << "  Cidade: " << delivery.getCode();
-                if (delivery.getDemand() > maxflow)
-                    cout << " - IN DEFICE" << setw(37) <<"│"<<endl;
-                else
-                    cout << right << setw(49)<<"│" << endl;
-                cout << "│ " << left << setw(6) << " - Old Value  : " << fixed<<setprecision(2)<<setw(8) << right<<delivery_sites_before[info].second
-                        << right<<setw(38)<< "│" << std::endl;
-                cout << "│ " << left << setw(6) << " - New Value  : " << fixed<<setprecision(2)<<setw(8) << right <<maxflow << right<<setw(38)<<"│" << std::endl;
-                double difference = maxflow - delivery_sites_before[info].second;
+                outputFile <<  setw(6) << "  Cidade: " << delivery.getCode();
 
-                // Output the first line
-                std::cout << "│ " << std::left << std::setw(6) << " - Difference : " << right<<fixed<<std::setw(8) << difference << right<<setw(38)<<"│" << std::endl;
+                if (delivery.getDemand() > maxflow) {
+                    cout << " - IN DEFICE" << setw(37) << "│" << endl;
+                    outputFile << " - IN DEFICE" << setw(37) << endl;
+                }
+                else
+                    cout << right << setw(49) << "│" << endl;
+                    outputFile << endl;
+                    cout << "│ " << left << setw(6) << " - Old Value  : " << fixed << setprecision(2) << setw(8)
+                         << right << delivery_sites_before[info].second
+                         << right << setw(38) << "│" << endl;
+                    outputFile  << left << setw(6) << " - Old Value  : " << fixed << setprecision(2) << setw(8)
+                         << right << delivery_sites_before[info].second
+                         << right << setw(38) <<  endl;
+                    cout << "│ " << left << setw(6) << " - New Value  : " << fixed << setprecision(2) << setw(8)
+                         << right << maxflow << right << setw(38) << "│" << endl;
+                    outputFile << left << setw(6) << " - New Value  : " << fixed << setprecision(2) << setw(8)
+                         << right << maxflow << right << setw(38) <<  endl;
+                    double difference = maxflow - delivery_sites_before[info].second;
+                    cout << "│ " << left << setw(6) << " - Difference : " << right << fixed
+                              << setw(8) << difference << right << setw(38) << "│" << endl;
+                    outputFile << left << setw(6) << " - Difference : " << right << fixed
+                         << setw(8) << difference << right << setw(38) << endl;
 
 
             }
         }
     }
     if(count ==0) {
-        std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
+        cout << "│" << right << setw(63) << "│" << endl;
+        outputFile << endl << endl;
         cout << "│" << "                    No diferences found!                    " << "│" << endl;
     }
-    std::cout << "│" << std::right << std::setw(63) << "│" << std::endl;
-    std::cout << "└────────────────────────────────────────────────────────────┘" << std::endl;
+    cout << "│" << right << setw(63) << "│" << endl;
+    cout << "└────────────────────────────────────────────────────────────┘" << endl;
 }

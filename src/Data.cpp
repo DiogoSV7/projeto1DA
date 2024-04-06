@@ -367,26 +367,26 @@ unordered_set<Pipes> Data::getPipes() const {
  *
  * @complexity Time Complexity: O(R), where R is the number of water reservoirs.
  */
-WaterReservoir Data::findWaterReservoir(const std::string code) const {
+WaterReservoir Data::findWaterReservoir(const string code) const {
     for(auto& it : water_reservoirs_){
         if(it.getCode()==code){
             return it;
         }
     }
-    throw std::runtime_error("Water Reservoir not found");
+    throw runtime_error("Water Reservoir not found");
 }
 /**
  * @brief Finds a pumping station by its code.
  *
  * @complexity Time Complexity: O(S), where S is the number of pumping stations.
  */
-PumpingStations Data::findPumpingStation(const std::string code) const {
+PumpingStations Data::findPumpingStation(const string code) const {
     for(auto& it : pumping_stations_){
         if(it.getPumpingStationCode()==code){
             return it;
         }
     }
-    throw std::runtime_error("Pumping station not found");
+    throw runtime_error("Pumping station not found");
 }
 
 /**
@@ -394,13 +394,13 @@ PumpingStations Data::findPumpingStation(const std::string code) const {
  *
  * @complexity Time Complexity: O(D), where D is the number of delivery sites.
  */
-DeliverySites Data::findDeliverySite(const std::string code) const {
+DeliverySites Data::findDeliverySite(const string code) const {
     for(auto& it : delivery_sites_) {
         if (it.getCode() == code) {
             return it;
         }
     }
-    throw std::runtime_error("Delivery site not found");
+    throw runtime_error("Delivery site not found");
 }
 
 /**
@@ -408,14 +408,14 @@ DeliverySites Data::findDeliverySite(const std::string code) const {
  *
  * @complexity Time Complexity: O(P), where P is the number of pipes.
  */
-Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_point_b) const {
+Pipes Data::findPipes(const string serv_point_a, const string serv_point_b) const {
     for(const auto& pipe : pipes_) {
         if ((pipe.getCitySourceName() == serv_point_a && pipe.getCitySinkName() == serv_point_b) ||
             (pipe.getCitySourceName() == serv_point_b && pipe.getCitySinkName() == serv_point_a)) {
             return pipe;
         }
     }
-    throw std::runtime_error("Pipes not found");
+    throw runtime_error("Pipes not found");
 }
 
 
@@ -426,9 +426,9 @@ Pipes Data::findPipes(const std::string serv_point_a, const std::string serv_poi
  *
  * @complexity Time Complexity: O(V * E^2), where V is the number of vertices and E is the number of edges.
  */
-std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
+vector<pair<string, double>> Data::checkWaterNeeds() {
     // Aqui vamos utilizar um vector, invés de um map, pq uma vez que não existe benefício em utilizar map pq vamos ter de percorrer o vetor inteiro na mesma
-    std::vector<std::pair<std::string, double>> deficits;
+    vector<pair<string, double>> deficits;
     for (auto vertex : network_.getVertexSet()) {
         if (vertex->getType() == 2 && vertex->getInfo() != "SuperSink") {
             DeliverySites del_site = findDeliverySite(vertex->getInfo());
@@ -443,7 +443,7 @@ std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
 
             if (total_flow < demand) {
                 double deficit = demand - total_flow;
-                deficits.push_back(std::make_pair(del_site.getCode(), deficit));
+                deficits.push_back(make_pair(del_site.getCode(), deficit));
             }
         }
     }
@@ -460,9 +460,9 @@ std::vector<std::pair<string, double>> Data::checkWaterNeeds() {
  *
  * @complexity Time Complexity: O(V), where V is the number of vertices.
  */
-void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::string& superSinkName) {
-    WaterReservoir super_source(superSourceName, "Municipality", 0, superSourceName, std::numeric_limits<int>::max());
-    DeliverySites super_sink(superSinkName, 0, superSinkName, std::numeric_limits<double>::max(), "0");
+void Data::addSuperSourceAndSink(const string& superSourceName, const string& superSinkName) {
+    WaterReservoir super_source(superSourceName, "Municipality", 0, superSourceName, numeric_limits<int>::max());
+    DeliverySites super_sink(superSinkName, 0, superSinkName, numeric_limits<double>::max(), "0");
     water_reservoirs_.insert(super_source);
     delivery_sites_.insert(super_sink);
     network_.addVertex(superSourceName, 0);
@@ -492,7 +492,7 @@ void Data::addSuperSourceAndSink(const std::string& superSourceName, const std::
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::testAndVisit(std::queue<Vertex*>& q, Edge* e, Vertex* w, double residual) {
+void Data::testAndVisit(queue<Vertex*>& q, Edge* e, Vertex* w, double residual) {
     if (!w->isVisited() && residual > 0) {
         w->setVisited(true);
         w->setPath(e);
@@ -515,7 +515,7 @@ bool Data::findAugmentingPath(Vertex* s, Vertex* t) {
         v->setVisited(false);
     }
     s->setVisited(true);
-    std::queue<Vertex*> q;
+    queue<Vertex*> q;
     q.push(s);
     while (!q.empty() && !t->isVisited()) {
         auto v = q.front();
@@ -541,15 +541,15 @@ bool Data::findAugmentingPath(Vertex* s, Vertex* t) {
  * @complexity Time Complexity: O(V), where V is the number of vertices.
  */
 double Data::findMinResidualAlongPath(Vertex* s, Vertex* t) {
-    const double INF = std::numeric_limits<double>::max();
+    const double INF = numeric_limits<double>::max();
     double f = INF;
     for (auto v = t; v != s;) {
         auto e = v->getPath();
         if (e->getDest() == v) {
-            f = std::min(f, e->getWeight() - e->getFlow());
+            f = min(f, e->getWeight() - e->getFlow());
             v = e->getOrig();
         } else {
-            f = std::min(f, e->getFlow());
+            f = min(f, e->getFlow());
             v = e->getDest();
         }
     }
@@ -591,7 +591,7 @@ void Data::edmondsKarp(string source, string target) {
     Vertex* s = network_.findVertex(source);
     Vertex* t = network_.findVertex(target);
     if (s == nullptr || t == nullptr || s == t) {
-        throw std::logic_error("Invalid source and/or target vertex");
+        throw logic_error("Invalid source and/or target vertex");
     }
     for (auto v : network_.getVertexSet()) {
         for (auto e : v->getAdj()) {
@@ -611,7 +611,7 @@ void Data::edmondsKarp(string source, string target) {
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
+void Data::removeWaterReservoir(const string &water_reservoir_code) {
     network_.removeVertex(water_reservoir_code);
     edmondsKarp("SuperSource", "SuperSink");
 }
@@ -623,7 +623,7 @@ void Data::removeWaterReservoir(const std::string &water_reservoir_code) {
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::removePumpingStations(const std::string &pumping_station_code) {
+void Data::removePumpingStations(const string &pumping_station_code) {
     network_.removeVertex(pumping_station_code);
     edmondsKarp("SuperSource", "SuperSink");
 }
@@ -635,7 +635,7 @@ void Data::removePumpingStations(const std::string &pumping_station_code) {
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::removeDeliverySite(const std::string &delivery_site_code) {
+void Data::removeDeliverySite(const string &delivery_site_code) {
     network_.removeVertex(delivery_site_code);
     edmondsKarp("SuperSource", "SuperSink");
 }
@@ -648,7 +648,7 @@ void Data::removeDeliverySite(const std::string &delivery_site_code) {
  *
  * @complexity Time Complexity: O(1)
  */
-void Data::removePipe(const std::string &serv_site_a, const std::string &serv_site_b) {
+void Data::removePipe(const string &serv_site_a, const string &serv_site_b) {
 
     Pipes pipe = findPipes(serv_site_a,serv_site_b);
     pipes_.erase(pipe);
@@ -769,7 +769,7 @@ void Data::balanceLoadAcrossNetwork() {
             flowDelivered+=e->getFlow();
             pri.push_back({e,e->getWeight()-e->getFlow()});
         }
-        std::sort(pri.begin(), pri.end(), compareSecond);
+        sort(pri.begin(), pri.end(), compareSecond);
 
         if(flowDelivered>p.second) {
             for(auto p:pri) {
@@ -796,10 +796,8 @@ void Data::balanceLoadAcrossNetwork() {
  */
 void Data::checkBalance() {
     edmondsKarp("SuperSource","SuperSink");
-    std::cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << std::endl;
-
+    cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << endl;
     balanceLoadAcrossNetwork();
-
-    std::cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << std::endl;
+    cout << computePipeMaxDif() << " " << computePipeDifVar() << " " << computeAvgPipeDif() << endl;
 }
 

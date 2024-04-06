@@ -83,8 +83,6 @@ protected:
 
 class Graph {
 public:
-    //~Graph();                                                              !!!!!!!!!!!!!!!!!!!!!!!!!!!
-
     Vertex* findVertex(const std::string& in) const;
     bool addVertex(const std::string& in, const int type);
     bool removeVertex(const std::string& in);
